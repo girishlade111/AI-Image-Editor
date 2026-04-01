@@ -216,6 +216,7 @@ export function useToolHandler(
         visible: true,
         locked: false,
         opacity: 1,
+        blendMode: 'normal',
         type: 'text',
       });
 
@@ -403,6 +404,7 @@ export function useToolHandler(
         visible: true,
         locked: false,
         opacity: 1,
+        blendMode: 'normal',
         type: tool,
       });
 

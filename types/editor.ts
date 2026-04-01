@@ -23,7 +23,9 @@ export type BlendMode =
   | 'color-dodge'
   | 'color-burn'
   | 'hard-light'
-  | 'soft-light';
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion';
 
 export interface LayerItem {
   id: string;
@@ -31,6 +33,7 @@ export interface LayerItem {
   visible: boolean;
   locked: boolean;
   opacity: number;
+  blendMode: BlendMode;
   type: string;
 }
 
@@ -70,6 +73,7 @@ export interface EditorActions {
   removeLayer: (id: string) => void;
   updateLayer: (id: string, updates: Partial<LayerItem>) => void;
   setActiveLayer: (id: string) => void;
+  reorderLayers: (fromIndex: number, toIndex: number) => void;
   setBrushSize: (size: number) => void;
   setBrushColor: (color: string) => void;
   setBgColor: (color: string) => void;

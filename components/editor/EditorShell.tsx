@@ -8,6 +8,7 @@ import LayersPanel from './LayersPanel';
 import AdjustmentsPanel from './AdjustmentsPanel';
 import NewCanvasDialog from './NewCanvasDialog';
 import { useEditorStore } from '@/store/useEditorStore';
+import { CanvasProvider } from '@/contexts/CanvasContext';
 import { Separator } from '@/components/ui/separator';
 
 export default function EditorShell() {
@@ -37,6 +38,7 @@ export default function EditorShell() {
   }, [setShowNewCanvasDialog]);
 
   return (
+    <CanvasProvider>
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#1a1a2e]">
       {/* Top bar — 48px */}
       <TopBar />
@@ -72,5 +74,6 @@ export default function EditorShell() {
         onCreateCanvas={handleCreateCanvas}
       />
     </div>
+    </CanvasProvider>
   );
 }

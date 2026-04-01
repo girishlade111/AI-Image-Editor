@@ -57,6 +57,14 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
   setActiveLayer: (id: string) => set({ activeLayerId: id }),
 
+  reorderLayers: (fromIndex: number, toIndex: number) =>
+    set((state) => {
+      const newLayers = [...state.layers];
+      const [moved] = newLayers.splice(fromIndex, 1);
+      newLayers.splice(toIndex, 0, moved);
+      return { layers: newLayers };
+    }),
+
   setBrushSize: (size: number) =>
     set({ brushSize: Math.max(1, Math.min(200, size)) }),
 

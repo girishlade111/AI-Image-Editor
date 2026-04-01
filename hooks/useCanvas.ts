@@ -19,8 +19,11 @@ const MAX_ZOOM = 30;
  * Core hook managing the entire Fabric.js canvas lifecycle,
  * zoom, pan, and synchronisation with the Zustand store.
  */
-export function useCanvas() {
-  const canvasRef = useRef<fabric.Canvas | null>(null);
+export function useCanvas(
+  externalCanvasRef?: React.MutableRefObject<any>
+) {
+  const internalCanvasRef = useRef<fabric.Canvas | null>(null);
+  const canvasRef = externalCanvasRef || internalCanvasRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasElRef = useRef<HTMLCanvasElement | null>(null);
   const isPanning = useRef(false);

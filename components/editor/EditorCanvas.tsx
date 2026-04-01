@@ -5,6 +5,7 @@ import { useCanvas } from '@/hooks/useCanvas';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToolHandler } from '@/hooks/useToolHandler';
 import { useEditorStore } from '@/store/useEditorStore';
+import { useCanvasContext } from '@/contexts/CanvasContext';
 import {
   addImageToCanvas,
   serializeCanvas,
@@ -45,6 +46,7 @@ function getCursorClass(tool: ToolType, brushSize: number): string {
 }
 
 export default function EditorCanvas() {
+  const { canvasRef: sharedCanvasRef } = useCanvasContext();
   const {
     canvasRef,
     canvasElRef,
@@ -53,7 +55,7 @@ export default function EditorCanvas() {
     zoomIn,
     zoomOut,
     resetZoom,
-  } = useCanvas();
+  } = useCanvas(sharedCanvasRef);
 
   const { applyCrop, cancelCrop } = useToolHandler(canvasRef);
 
@@ -95,15 +97,19 @@ export default function EditorCanvas() {
         if (!dataUrl) return;
 
         try {
-          await addImageToCanvas(canvas, dataUrl);
+          const img = await addImageToCanvas(canvas, dataUrl);
           const count = incrementImageCounter();
+          const layerId = generateLayerId();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (img as any).__layerId = layerId;
 
           addLayer({
-            id: generateLayerId(),
+            id: layerId,
             name: `Image ${count}`,
             visible: true,
             locked: false,
             opacity: 1,
+            blendMode: 'normal',
             type: 'image',
           });
 
