@@ -407,8 +407,23 @@ export function useToolHandler(
       });
 
       activeShape.current = null;
-      canvas.setActiveObject(shape);
-      canvas.renderAll();
+
+      // shape reference may be invalidated by history system, use try-catch
+      try {
+        canvas.setActiveObject(shape);
+        canvas.renderAll();
+      } catch {
+        // If shape was invalidated, try selecting the last object
+        const objects = canvas.getObjects();
+        if (objects.length > 0) {
+          try {
+            canvas.setActiveObject(objects[objects.length - 1]);
+            canvas.renderAll();
+          } catch {
+            canvas.requestRenderAll();
+          }
+        }
+      }
     },
     [canvasRef, addLayer]
   );
