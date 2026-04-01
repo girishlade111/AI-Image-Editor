@@ -283,7 +283,7 @@ export default function EditorCanvas() {
   );
 }
 
-/** Overlay hint shown when the canvas has zero objects. */
+/** Overlay hint shown when the canvas has zero objects and select tool is active. */
 function EmptyCanvasHint({
   canvasRef,
   onOpenFile,
@@ -292,6 +292,7 @@ function EmptyCanvasHint({
   onOpenFile: () => void;
 }) {
   const [objectCount, setObjectCount] = useState(0);
+  const activeTool = useEditorStore((s) => s.activeTool);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -308,13 +309,14 @@ function EmptyCanvasHint({
     };
   }, [canvasRef]);
 
-  if (objectCount > 0) return null;
+  // Only show when no objects AND select tool is active
+  if (objectCount > 0 || activeTool !== 'select') return null;
 
   return (
-    <div className="pointer-events-auto absolute inset-0 z-20 flex items-center justify-center">
+    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
       <button
         onClick={onOpenFile}
-        className="group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-10 py-8 transition-all hover:border-[#e94560]/30 hover:bg-white/[0.04]"
+        className="pointer-events-auto group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-10 py-8 transition-all hover:border-[#e94560]/30 hover:bg-white/[0.04]"
       >
         <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/5 transition-colors group-hover:bg-[#e94560]/10">
           <svg
@@ -341,3 +343,4 @@ function EmptyCanvasHint({
     </div>
   );
 }
+
