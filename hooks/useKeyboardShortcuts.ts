@@ -92,6 +92,51 @@ export function useKeyboardShortcuts(
             e.preventDefault();
             options?.onResetZoom?.();
             return;
+
+          case 'b': {
+            const canvas = canvasRef.current;
+            if (canvas) {
+              const active = canvas.getActiveObject();
+              if (active && active.type === 'i-text') {
+                e.preventDefault();
+                const txt = active as fabric.IText;
+                const isBold = txt.fontWeight === 'bold';
+                txt.set('fontWeight', isBold ? 'normal' : 'bold');
+                canvas.requestRenderAll();
+              }
+            }
+            return;
+          }
+
+          case 'i': {
+            const canvas = canvasRef.current;
+            if (canvas) {
+              const active = canvas.getActiveObject();
+              if (active && active.type === 'i-text') {
+                e.preventDefault();
+                const txt = active as fabric.IText;
+                const isItalic = txt.fontStyle === 'italic';
+                txt.set('fontStyle', isItalic ? 'normal' : 'italic');
+                canvas.requestRenderAll();
+              }
+            }
+            return;
+          }
+
+          case 'u': {
+            const canvas = canvasRef.current;
+            if (canvas) {
+              const active = canvas.getActiveObject();
+              if (active && active.type === 'i-text') {
+                e.preventDefault();
+                const txt = active as fabric.IText;
+                const isUnderline = txt.underline;
+                txt.set('underline', !isUnderline);
+                canvas.requestRenderAll();
+              }
+            }
+            return;
+          }
         }
         return;
       }
@@ -115,7 +160,7 @@ export function useKeyboardShortcuts(
             const active = canvas.getActiveObjects();
             if (active.length > 0) {
               e.preventDefault();
-              active.forEach((obj) => canvas.remove(obj));
+              active.forEach((obj: any) => canvas.remove(obj));
               canvas.discardActiveObject();
               canvas.requestRenderAll();
             }

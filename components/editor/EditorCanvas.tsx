@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import { useCanvas } from '@/hooks/useCanvas';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useToolHandler } from '@/hooks/useToolHandler';
 import { useEditorStore } from '@/store/useEditorStore';
 import {
   addImageToCanvas,
@@ -10,6 +11,7 @@ import {
   generateLayerId,
   formatZoom,
 } from '@/lib/fabricHelpers';
+import type { ToolType } from '@/types/editor';
 
 const ACCEPTED_FORMATS = [
   'image/png',
@@ -20,6 +22,27 @@ const ACCEPTED_FORMATS = [
   'image/svg+xml',
   'image/bmp',
 ];
+
+/** Map active tool → CSS cursor class for the container div. */
+function getCursorClass(tool: ToolType, brushSize: number): string {
+  switch (tool) {
+    case 'select':
+      return 'cursor-default';
+    case 'text':
+      return 'cursor-text';
+    case 'rectangle':
+    case 'circle':
+    case 'line':
+    case 'crop':
+    case 'eyedropper':
+      return 'cursor-crosshair';
+    case 'brush':
+    case 'eraser':
+      return ''; // handled by custom dynamic cursor below
+    default:
+      return 'cursor-default';
+  }
+}
 
 export default function EditorCanvas() {
   const {
@@ -32,9 +55,14 @@ export default function EditorCanvas() {
     resetZoom,
   } = useCanvas();
 
+  const { applyCrop, cancelCrop } = useToolHandler(canvasRef);
+
+  const activeTool = useEditorStore((s) => s.activeTool);
   const zoom = useEditorStore((s) => s.zoom);
   const canvasWidth = useEditorStore((s) => s.canvasWidth);
   const canvasHeight = useEditorStore((s) => s.canvasHeight);
+  const brushSize = useEditorStore((s) => s.brushSize);
+  const isCropping = useEditorStore((s) => s.isCropping);
   const addLayer = useEditorStore((s) => s.addLayer);
   const pushHistory = useEditorStore((s) => s.pushHistory);
   const incrementImageCounter = useEditorStore((s) => s.incrementImageCounter);
@@ -125,16 +153,31 @@ export default function EditorCanvas() {
       if (file && ACCEPTED_FORMATS.includes(file.type)) {
         loadImageFile(file);
       }
-      // Reset input so user can re-upload the same file
       e.target.value = '';
     },
     [loadImageFile]
   );
 
+  // ── Dynamic cursor for brush/eraser ────────────────────
+  const dynamicCursorStyle = useMemo(() => {
+    if (activeTool !== 'brush' && activeTool !== 'eraser') return {};
+    const size = Math.max(4, Math.min(brushSize * zoom, 128));
+    const half = size / 2;
+    const color = activeTool === 'eraser' ? 'rgba(255,255,255,0.6)' : 'rgba(233,69,96,0.5)';
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'><circle cx='${half}' cy='${half}' r='${half - 1}' fill='none' stroke='${color}' stroke-width='1'/></svg>`;
+    const encoded = encodeURIComponent(svg);
+    return {
+      cursor: `url("data:image/svg+xml,${encoded}") ${half} ${half}, crosshair`,
+    };
+  }, [activeTool, brushSize, zoom]);
+
+  const cursorClass = getCursorClass(activeTool, brushSize);
+
   return (
     <div
       ref={containerRef}
-      className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#1a1a2e]"
+      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-[#1a1a2e] ${cursorClass}`}
+      style={dynamicCursorStyle}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -193,10 +236,34 @@ export default function EditorCanvas() {
 
       {/* Placeholder (only when canvas has no objects) */}
       {canvasReady && (
-        <EmptyCanvasHint
-          canvasRef={canvasRef}
-          onOpenFile={openFilePicker}
-        />
+        <EmptyCanvasHint canvasRef={canvasRef} onOpenFile={openFilePicker} />
+      )}
+
+      {/* Crop action buttons */}
+      {isCropping && (
+        <div className="absolute right-4 top-4 z-30 flex items-center gap-2">
+          <button
+            onClick={cancelCrop}
+            className="rounded-lg border border-white/10 bg-[#16213e] px-4 py-1.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/[0.08] hover:text-white/80"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={applyCrop}
+            className="rounded-lg bg-[#e94560] px-4 py-1.5 text-xs font-medium text-white shadow-lg shadow-[#e94560]/20 transition-colors hover:bg-[#e94560]/80"
+          >
+            Apply Crop
+          </button>
+        </div>
+      )}
+
+      {/* Crop instruction overlay */}
+      {activeTool === 'crop' && !isCropping && (
+        <div className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 rounded-full bg-black/50 px-4 py-1.5 backdrop-blur-sm">
+          <span className="text-[11px] font-medium text-white/70">
+            Click and drag to select crop area
+          </span>
+        </div>
       )}
 
       {/* Zoom indicator — bottom right */}

@@ -6,22 +6,26 @@ const MAX_HISTORY = 50;
 export const useEditorStore = create<EditorStore>((set, get) => ({
   // ── State ───────────────────────────────────────────────
   activeTool: 'select',
+  previousTool: 'select',
   zoom: 1,
   canvasWidth: 800,
   canvasHeight: 600,
   layers: [],
   activeLayerId: null,
   brushSize: 5,
-  brushColor: '#ffffff',
+  brushColor: '#000000',
+  bgColor: '#ffffff',
   isProcessing: false,
   history: [],
   historyIndex: -1,
   imageCounter: 0,
   showNewCanvasDialog: true,
   canvasReady: false,
+  isCropping: false,
 
   // ── Actions ─────────────────────────────────────────────
-  setActiveTool: (tool: ToolType) => set({ activeTool: tool }),
+  setActiveTool: (tool: ToolType) =>
+    set((s) => ({ activeTool: tool, previousTool: s.activeTool })),
 
   setZoom: (zoom: number) =>
     set({ zoom: Math.max(0.05, Math.min(30, zoom)) }),
@@ -58,14 +62,19 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
   setBrushColor: (color: string) => set({ brushColor: color }),
 
+  setBgColor: (color: string) => set({ bgColor: color }),
+
+  swapColors: () => {
+    const { brushColor, bgColor } = get();
+    set({ brushColor: bgColor, bgColor: brushColor });
+  },
+
   setIsProcessing: (val: boolean) => set({ isProcessing: val }),
 
   pushHistory: (snapshot: string) => {
     const { history, historyIndex } = get();
-    // Trim any future states when a new change is made
     const trimmed = history.slice(0, historyIndex + 1);
     const next = [...trimmed, snapshot];
-    // Cap at MAX_HISTORY
     if (next.length > MAX_HISTORY) next.shift();
     set({ history: next, historyIndex: next.length - 1 });
   },
@@ -91,6 +100,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   },
 
   setShowNewCanvasDialog: (val: boolean) => set({ showNewCanvasDialog: val }),
-
   setCanvasReady: (val: boolean) => set({ canvasReady: val }),
+  setIsCropping: (val: boolean) => set({ isCropping: val }),
 }));

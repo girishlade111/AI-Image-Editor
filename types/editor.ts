@@ -44,6 +44,7 @@ export type CanvasBackground = 'white' | 'transparent' | 'black';
 
 export interface EditorState {
   activeTool: ToolType;
+  previousTool: ToolType;
   zoom: number;
   canvasWidth: number;
   canvasHeight: number;
@@ -51,12 +52,14 @@ export interface EditorState {
   activeLayerId: string | null;
   brushSize: number;
   brushColor: string;
+  bgColor: string;
   isProcessing: boolean;
   history: string[];
   historyIndex: number;
   imageCounter: number;
   showNewCanvasDialog: boolean;
   canvasReady: boolean;
+  isCropping: boolean;
 }
 
 export interface EditorActions {
@@ -69,6 +72,8 @@ export interface EditorActions {
   setActiveLayer: (id: string) => void;
   setBrushSize: (size: number) => void;
   setBrushColor: (color: string) => void;
+  setBgColor: (color: string) => void;
+  swapColors: () => void;
   setIsProcessing: (val: boolean) => void;
   pushHistory: (state: string) => void;
   undo: () => void;
@@ -76,6 +81,7 @@ export interface EditorActions {
   incrementImageCounter: () => number;
   setShowNewCanvasDialog: (val: boolean) => void;
   setCanvasReady: (val: boolean) => void;
+  setIsCropping: (val: boolean) => void;
 }
 
 export type EditorStore = EditorState & EditorActions;
