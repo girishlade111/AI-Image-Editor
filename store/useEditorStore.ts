@@ -89,6 +89,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
   setActiveLayer: (id: string) => set({ activeLayerId: id }),
 
+  setLayers: (layers: LayerItem[]) => set({ layers }),
+
   reorderLayers: (fromIndex: number, toIndex: number) =>
     set((state) => {
       const newLayers = [...state.layers];

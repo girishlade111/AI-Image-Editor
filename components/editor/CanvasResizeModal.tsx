@@ -52,7 +52,7 @@ export function resizeCanvas(
 interface CanvasResizeModalProps {
   open: boolean;
   onClose: () => void;
-  onResize: (newWidth: number, newHeight: number, anchor: AnchorPoint, scaleContent: boolean, bgFill: BgFill) => void;
+  onResize?: (newWidth: number, newHeight: number, anchor: AnchorPoint, scaleContent: boolean, bgFill: BgFill) => void;
 }
 
 const ANCHOR_GRID: AnchorPoint[][] = [

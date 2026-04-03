@@ -161,42 +161,47 @@ function applyVignette(canvas: any, adj: AdjustmentsState) {
   const feather = adj.vignetteFeather / 100;
   const amount = Math.abs(adj.vignetteAmount) / 100;
   const isLight = adj.vignetteAmount < 0;
-  const color = isLight ? 'rgba(255,255,255,' : 'rgba(0,0,0,';
+  const baseColor = isLight ? '255,255,255' : '0,0,0';
 
-  const innerRadius = midpoint * Math.min(w, h) * 0.5;
-  const outerRadius = innerRadius + feather * Math.min(w, h) * 0.5;
+  // Calculate inner (transparent) and outer (dark/light) radii
+  const minDim = Math.min(w, h);
+  const maxDim = Math.max(w, h);
+  const innerR = midpoint * minDim * 0.4;
+  const outerR = innerR + feather * maxDim * 0.6 + minDim * 0.1;
 
-  const ellipse = new fabric.Ellipse({
-    rx: w * 0.8,
-    ry: h * 0.8,
-    left: w / 2,
-    top: h / 2,
-    originX: 'center',
-    originY: 'center',
+  // Use a full-canvas rectangle with radial gradient centered
+  const rect = new fabric.Rect({
+    left: 0,
+    top: 0,
+    width: w,
+    height: h,
+    originX: 'left',
+    originY: 'top',
     fill: new fabric.Gradient({
       type: 'radial',
       coords: {
-        r1: innerRadius || 1,
-        r2: outerRadius || w * 0.6,
-        x1: w * 0.8,
-        y1: h * 0.8,
-        x2: w * 0.8,
-        y2: h * 0.8,
+        r1: innerR,
+        r2: outerR,
+        x1: w / 2,
+        y1: h / 2,
+        x2: w / 2,
+        y2: h / 2,
       },
       colorStops: [
-        { offset: 0, color: color + '0)' },
-        { offset: 0.6, color: color + '0)' },
-        { offset: 1, color: color + amount + ')' },
+        { offset: 0, color: `rgba(${baseColor},0)` },
+        { offset: 0.5, color: `rgba(${baseColor},0)` },
+        { offset: 1, color: `rgba(${baseColor},${amount})` },
       ],
     }),
     selectable: false,
     evented: false,
-    excludeFromExport: false,
+    excludeFromExport: true,
   } as any);
 
-  (ellipse as any).__vignetteOverlay = true;
-  (ellipse as any).__layerId = '__vignette';
-  canvas.add(ellipse);
+  (rect as any).__vignetteOverlay = true;
+  (rect as any).__layerId = '__vignette';
+  canvas.add(rect);
+  canvas.bringToFront(rect);
   canvas.renderAll();
 }
 
