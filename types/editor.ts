@@ -65,6 +65,9 @@ export interface EditorState {
   isCropping: boolean;
   adjustments: AdjustmentsState;
   adjustmentTarget: AdjustmentTarget;
+  activeFilterId: string;
+  filterIntensity: number;
+  effects: EffectsState;
 }
 
 export interface EditorActions {
@@ -92,6 +95,10 @@ export interface EditorActions {
   resetAdjustments: () => void;
   resetAdjustmentSection: (section: AdjustmentSection) => void;
   setAdjustmentTarget: (target: AdjustmentTarget) => void;
+  setActiveFilter: (id: string) => void;
+  setFilterIntensity: (value: number) => void;
+  setEffect: (key: string, config: Partial<EffectConfig> | Partial<DuotoneConfig> | boolean) => void;
+  resetEffects: () => void;
 }
 
 // ── Adjustments ─────────────────────────────────────────
@@ -119,5 +126,25 @@ export type AdjustmentKey = keyof AdjustmentsState;
 export type AdjustmentSection = 'tone' | 'color' | 'detail' | 'vignette';
 
 export type AdjustmentTarget = 'selected' | 'all';
+
+// ── Filters & Effects ───────────────────────────────────
+export interface EffectConfig {
+  enabled: boolean;
+  value: number;
+}
+
+export interface DuotoneConfig {
+  enabled: boolean;
+  shadow: string;
+  highlight: string;
+}
+
+export interface EffectsState {
+  blur: EffectConfig;
+  pixelate: EffectConfig;
+  grain: EffectConfig;
+  glitch: boolean;
+  duotone: DuotoneConfig;
+}
 
 export type EditorStore = EditorState & EditorActions;

@@ -6,14 +6,16 @@ import Toolbar from './Toolbar';
 import EditorCanvas from './EditorCanvas';
 import LayersPanel from './LayersPanel';
 import AdjustmentsPanel from './AdjustmentsPanel';
+import FiltersPanel from './FiltersPanel';
 import NewCanvasDialog from './NewCanvasDialog';
 import { useEditorStore } from '@/store/useEditorStore';
 import { CanvasProvider } from '@/contexts/CanvasContext';
 
 const TABS = [
   { id: 'layers', label: 'Layers' },
-  { id: 'adjustments', label: 'Adjustments' },
-  { id: 'properties', label: 'Properties' },
+  { id: 'adjust', label: 'Adjust' },
+  { id: 'filters', label: 'Filters' },
+  { id: 'properties', label: 'Props' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -81,7 +83,8 @@ export default function EditorShell() {
           {/* Tab content */}
           <div className="flex-1 overflow-hidden">
             {activeTab === 'layers' && <LayersPanel />}
-            {activeTab === 'adjustments' && <AdjustmentsPanel />}
+            {activeTab === 'adjust' && <AdjustmentsPanel />}
+            {activeTab === 'filters' && <FiltersPanel />}
             {activeTab === 'properties' && (
               <div className="flex h-full items-center justify-center">
                 <span className="text-[11px] text-white/20">

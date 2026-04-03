@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { EditorStore, LayerItem, ToolType, AdjustmentKey, AdjustmentSection, AdjustmentTarget, AdjustmentsState } from '@/types/editor';
+import type { EditorStore, LayerItem, ToolType, AdjustmentKey, AdjustmentSection, AdjustmentTarget, AdjustmentsState, EffectsState, EffectConfig, DuotoneConfig } from '@/types/editor';
 
 const DEFAULT_ADJUSTMENTS: AdjustmentsState = {
   brightness: 0, contrast: 0, exposure: 0,
@@ -15,6 +15,14 @@ const SECTION_KEYS: Record<AdjustmentSection, (keyof AdjustmentsState)[]> = {
   color: ['saturation', 'vibrance', 'hue', 'temperature', 'tint'],
   detail: ['sharpness', 'clarity', 'noiseReduction'],
   vignette: ['vignetteAmount', 'vignetteMidpoint', 'vignetteFeather'],
+};
+
+const DEFAULT_EFFECTS: EffectsState = {
+  blur: { enabled: false, value: 0 },
+  pixelate: { enabled: false, value: 1 },
+  grain: { enabled: false, value: 0 },
+  glitch: false,
+  duotone: { enabled: false, shadow: '#000000', highlight: '#ffffff' },
 };
 
 const MAX_HISTORY = 50;
@@ -40,6 +48,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   isCropping: false,
   adjustments: { ...DEFAULT_ADJUSTMENTS },
   adjustmentTarget: 'selected' as AdjustmentTarget,
+  activeFilterId: 'none',
+  filterIntensity: 100,
+  effects: { ...DEFAULT_EFFECTS },
 
   // ── Actions ─────────────────────────────────────────────
   setActiveTool: (tool: ToolType) =>
@@ -143,4 +154,18 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     }),
 
   setAdjustmentTarget: (target: AdjustmentTarget) => set({ adjustmentTarget: target }),
+
+  setActiveFilter: (id: string) => set({ activeFilterId: id }),
+  setFilterIntensity: (value: number) => set({ filterIntensity: value }),
+
+  setEffect: (key: string, config: Partial<EffectConfig> | Partial<DuotoneConfig> | boolean) =>
+    set((s) => {
+      if (key === 'glitch') {
+        return { effects: { ...s.effects, glitch: config as boolean } };
+      }
+      const prev = s.effects[key as keyof Omit<EffectsState, 'glitch'>] as object;
+      return { effects: { ...s.effects, [key]: { ...prev, ...(config as object) } } };
+    }),
+
+  resetEffects: () => set({ effects: { ...DEFAULT_EFFECTS }, activeFilterId: 'none', filterIntensity: 100 }),
 }));
