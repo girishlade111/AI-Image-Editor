@@ -53,6 +53,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   effects: { ...DEFAULT_EFFECTS },
   isEraseMaskMode: false,
   aiProcessingMessage: '',
+  hasUnsavedChanges: false,
 
   // ── Actions ─────────────────────────────────────────────
   setActiveTool: (tool: ToolType) =>
@@ -173,4 +174,16 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
   setIsEraseMaskMode: (val: boolean) => set({ isEraseMaskMode: val }),
   setAiProcessingMessage: (msg: string) => set({ aiProcessingMessage: msg }),
+  setHasUnsavedChanges: (val: boolean) => set({ hasUnsavedChanges: val }),
+  resetCanvasState: () =>
+    set({
+      layers: [],
+      activeLayerId: null,
+      history: [],
+      historyIndex: -1,
+      adjustments: { ...DEFAULT_ADJUSTMENTS },
+      effects: { ...DEFAULT_EFFECTS },
+      activeFilterId: 'none',
+      filterIntensity: 100,
+    }),
 }));

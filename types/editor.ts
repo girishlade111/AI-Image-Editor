@@ -70,6 +70,7 @@ export interface EditorState {
   effects: EffectsState;
   isEraseMaskMode: boolean;
   aiProcessingMessage: string;
+  hasUnsavedChanges: boolean;
 }
 
 export interface EditorActions {
@@ -103,6 +104,8 @@ export interface EditorActions {
   resetEffects: () => void;
   setIsEraseMaskMode: (val: boolean) => void;
   setAiProcessingMessage: (msg: string) => void;
+  setHasUnsavedChanges: (val: boolean) => void;
+  resetCanvasState: () => void;
 }
 
 // ── Adjustments ─────────────────────────────────────────
