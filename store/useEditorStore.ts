@@ -51,6 +51,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   activeFilterId: 'none',
   filterIntensity: 100,
   effects: { ...DEFAULT_EFFECTS },
+  isEraseMaskMode: false,
+  aiProcessingMessage: '',
 
   // ── Actions ─────────────────────────────────────────────
   setActiveTool: (tool: ToolType) =>
@@ -168,4 +170,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     }),
 
   resetEffects: () => set({ effects: { ...DEFAULT_EFFECTS }, activeFilterId: 'none', filterIntensity: 100 }),
+
+  setIsEraseMaskMode: (val: boolean) => set({ isEraseMaskMode: val }),
+  setAiProcessingMessage: (msg: string) => set({ aiProcessingMessage: msg }),
 }));

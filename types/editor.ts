@@ -68,6 +68,8 @@ export interface EditorState {
   activeFilterId: string;
   filterIntensity: number;
   effects: EffectsState;
+  isEraseMaskMode: boolean;
+  aiProcessingMessage: string;
 }
 
 export interface EditorActions {
@@ -99,6 +101,8 @@ export interface EditorActions {
   setFilterIntensity: (value: number) => void;
   setEffect: (key: string, config: Partial<EffectConfig> | Partial<DuotoneConfig> | boolean) => void;
   resetEffects: () => void;
+  setIsEraseMaskMode: (val: boolean) => void;
+  setAiProcessingMessage: (msg: string) => void;
 }
 
 // ── Adjustments ─────────────────────────────────────────

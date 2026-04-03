@@ -8,14 +8,22 @@ import LayersPanel from './LayersPanel';
 import AdjustmentsPanel from './AdjustmentsPanel';
 import FiltersPanel from './FiltersPanel';
 import PropertiesPanel from './PropertiesPanel';
+import AIToolsPanel from './AIToolsPanel';
+import AILoadingOverlay from './AILoadingOverlay';
 import NewCanvasDialog from './NewCanvasDialog';
 import { useEditorStore } from '@/store/useEditorStore';
 import { CanvasProvider } from '@/contexts/CanvasContext';
+import { Toaster, toast } from 'react-hot-toast';
+
+export const successToast = (msg: string) => toast.success(msg);
+export const errorToast = (msg: string) => toast.error(msg);
+export const infoToast = (msg: string) => toast(msg);
 
 const TABS = [
   { id: 'layers', label: 'Layers' },
   { id: 'adjust', label: 'Adjust' },
   { id: 'filters', label: 'Filters' },
+  { id: 'ai', label: 'AI' },
   { id: 'properties', label: 'Props' },
 ] as const;
 
@@ -86,11 +94,14 @@ export default function EditorShell() {
             {activeTab === 'layers' && <LayersPanel />}
             {activeTab === 'adjust' && <AdjustmentsPanel />}
             {activeTab === 'filters' && <FiltersPanel />}
+            {activeTab === 'ai' && <AIToolsPanel />}
             {activeTab === 'properties' && <PropertiesPanel />}
           </div>
         </div>
       </div>
 
+      <AILoadingOverlay />
+      <Toaster position="bottom-right" />
       <NewCanvasDialog
         open={showNewCanvasDialog}
         onClose={handleCloseDialog}
