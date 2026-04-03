@@ -182,32 +182,32 @@ export default function EditorCanvas() {
   return (
     <div
       ref={containerRef}
-      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-[#1a1a2e] ${cursorClass}`}
+      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-metal-800 ${cursorClass}`}
       style={dynamicCursorStyle}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       tabIndex={0}
     >
-      {/* Checkerboard background pattern */}
+      {/* Refined checkerboard background pattern */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
         style={{
           backgroundImage: `
-            linear-gradient(45deg, #808080 25%, transparent 25%),
-            linear-gradient(-45deg, #808080 25%, transparent 25%),
-            linear-gradient(45deg, transparent 75%, #808080 75%),
-            linear-gradient(-45deg, transparent 75%, #808080 75%)
+            linear-gradient(45deg, #6b7194 25%, transparent 25%),
+            linear-gradient(-45deg, #6b7194 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, #6b7194 75%),
+            linear-gradient(-45deg, transparent 75%, #6b7194 75%)
           `,
-          backgroundSize: '20px 20px',
-          backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+          backgroundSize: '16px 16px',
+          backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
         }}
       />
 
       {/* Drag overlay */}
       {isDragging && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#e94560]/10 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-[#e94560]/50 bg-[#1a1a2e]/80 px-12 py-8">
+          <div className="flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-[#e94560]/50 bg-metal-800/90 px-12 py-8 shadow-metal-xl">
             <svg
               className="h-10 w-10 text-[#e94560]"
               fill="none"
@@ -229,7 +229,7 @@ export default function EditorCanvas() {
       )}
 
       {/* Fabric.js Canvas */}
-      <canvas ref={canvasElRef} className="absolute shadow-2xl" />
+      <canvas ref={canvasElRef} className="absolute shadow-canvas rounded-sm" />
 
       {/* Hidden file input */}
       <input
@@ -250,13 +250,13 @@ export default function EditorCanvas() {
         <div className="absolute right-4 top-4 z-30 flex items-center gap-2">
           <button
             onClick={cancelCrop}
-            className="rounded-lg border border-white/10 bg-[#16213e] px-4 py-1.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/[0.08] hover:text-white/80"
+            className="rounded-xl border border-white/[0.08] bg-metal-card px-4 py-1.5 text-xs font-medium text-white/60 transition-all duration-150 hover:bg-white/[0.06] hover:text-white/80 shadow-metal-sm"
           >
             Cancel
           </button>
           <button
             onClick={applyCrop}
-            className="rounded-lg bg-[#e94560] px-4 py-1.5 text-xs font-medium text-white shadow-lg shadow-[#e94560]/20 transition-colors hover:bg-[#e94560]/80"
+            className="rounded-xl bg-gradient-to-r from-[#e94560] to-[#ff6b6b] px-4 py-1.5 text-xs font-medium text-white shadow-[0_2px_12px_rgba(233,69,96,0.25)] transition-all duration-150 hover:shadow-[0_4px_20px_rgba(233,69,96,0.35)] hover:from-[#f05a73] hover:to-[#ff8080]"
           >
             Apply Crop
           </button>
@@ -273,15 +273,15 @@ export default function EditorCanvas() {
       )}
 
       {/* Zoom indicator — bottom right */}
-      <div className="pointer-events-none absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-black/40 px-3 py-1.5 backdrop-blur-sm">
-        <span className="text-[10px] font-medium tabular-nums text-white/60">
+      <div className="pointer-events-none absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-xl bg-metal-card/80 backdrop-blur-sm border border-white/[0.04] px-3 py-1.5 shadow-metal-sm">
+        <span className="text-[10px] font-medium tabular-nums text-white/50">
           {formatZoom(zoom)}
         </span>
       </div>
 
       {/* Canvas size indicator — bottom left */}
-      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1 rounded-full bg-black/40 px-3 py-1.5 backdrop-blur-sm">
-        <span className="text-[10px] font-medium tabular-nums text-white/40">
+      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1 rounded-xl bg-metal-card/80 backdrop-blur-sm border border-white/[0.04] px-3 py-1.5 shadow-metal-sm">
+        <span className="text-[10px] font-medium tabular-nums text-white/30">
           {canvasWidth} × {canvasHeight}
         </span>
       </div>
@@ -322,11 +322,11 @@ function EmptyCanvasHint({
     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
       <button
         onClick={onOpenFile}
-        className="pointer-events-auto group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-10 py-8 transition-all hover:border-[#e94560]/30 hover:bg-white/[0.04]"
+        className="pointer-events-auto group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.04] bg-metal-card/60 backdrop-blur-sm px-10 py-8 transition-all duration-200 hover:border-[#e94560]/30 hover:bg-metal-card/80 shadow-metal"
       >
-        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/5 transition-colors group-hover:bg-[#e94560]/10">
+        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/[0.03] border border-white/[0.04] transition-all duration-200 group-hover:bg-[#e94560]/10 group-hover:border-[#e94560]/20">
           <svg
-            className="h-7 w-7 text-white/25 transition-colors group-hover:text-[#e94560]/60"
+            className="h-7 w-7 text-white/15 transition-colors duration-200 group-hover:text-[#e94560]/60"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

@@ -18,7 +18,6 @@ import { cn } from '@/lib/utils';
 import { useEditorStore } from '@/store/useEditorStore';
 import { useCanvasContext } from '@/contexts/CanvasContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import {
   DropdownMenu,
@@ -67,18 +66,17 @@ function generateThumbnail(canvas: any, layerId: string): string | null {
     if (!ctx) return null;
 
     // Checkerboard background for transparency
-    ctx.fillStyle = '#2a2a4a';
+    ctx.fillStyle = '#1e2237';
     ctx.fillRect(0, 0, 32, 32);
     for (let y = 0; y < 32; y += 4) {
       for (let x = 0; x < 32; x += 4) {
         if ((x + y) % 8 === 0) {
-          ctx.fillStyle = '#3a3a5a';
+          ctx.fillStyle = '#262b44';
           ctx.fillRect(x, y, 4, 4);
         }
       }
     }
 
-    // Use fabric's toDataURL on the object directly
     const wasVisible = obj.visible;
     obj.set('visible', true);
 
@@ -92,7 +90,6 @@ function generateThumbnail(canvas: any, layerId: string): string | null {
     if (objDataUrl) {
       const img = new Image();
       img.src = objDataUrl;
-      // Since toDataURL is sync for non-image objects, try drawing immediately
       try {
         const scale = Math.min(32 / bounds.width, 32 / bounds.height);
         const sw = bounds.width * scale;
@@ -101,7 +98,7 @@ function generateThumbnail(canvas: any, layerId: string): string | null {
         const sy = (32 - sh) / 2;
         ctx.drawImage(img, sx, sy, sw, sh);
       } catch {
-        // Fallback: just return the direct data URL scaled
+        // Fallback
       }
     }
 
@@ -270,7 +267,6 @@ export default function LayersPanel() {
 
     const id = nanoid();
 
-    // Create a transparent rect via the canvas's fabric reference
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fab = require('fabric').fabric;
     const rect = new fab.Rect({
@@ -489,20 +485,22 @@ export default function LayersPanel() {
         </span>
         <button
           onClick={handleAddLayer}
-          className="flex h-6 w-6 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/[0.06] hover:text-white/60"
+          className="flex h-6 w-6 items-center justify-center rounded-lg text-white/30 transition-all duration-150 hover:bg-white/[0.06] hover:text-white/70"
           title="Add layer"
         >
           <Plus className="h-3.5 w-3.5" />
         </button>
       </div>
-      <Separator className="bg-white/[0.06]" />
+
+      {/* Separator */}
+      <div className="h-px bg-metal-sep" />
 
       {/* Layer list */}
       <ScrollArea className="flex-1">
-        <div className="flex flex-col gap-px p-1.5">
+        <div className="flex flex-col gap-0.5 p-1.5">
           {layers.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.03]">
+              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.02] border border-white/[0.04]">
                 <Layers className="h-4 w-4 text-white/15" />
               </div>
               <span className="text-[11px] text-white/20">No layers yet</span>
@@ -528,16 +526,16 @@ export default function LayersPanel() {
                 onDrop={(e) => handleDrop(e, realIndex)}
                 onClick={() => handleLayerClick(layer.id)}
                 className={cn(
-                  'group flex h-12 cursor-pointer items-center gap-1.5 rounded-md px-1.5 transition-colors',
+                  'group flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-1.5 transition-all duration-150',
                   isActive
-                    ? 'border-l-4 border-l-[#e94560] bg-[#e94560]/10'
-                    : 'border-l-4 border-l-transparent hover:bg-white/[0.04]',
-                  isDragTarget && 'ring-1 ring-[#e94560]/50',
+                    ? 'bg-gradient-to-r from-[#e94560]/10 to-transparent border-l-[3px] border-l-[#e94560] shadow-[inset_0_1px_0_rgba(233,69,96,0.08)]'
+                    : 'border-l-[3px] border-l-transparent hover:bg-white/[0.03]',
+                  isDragTarget && 'ring-1 ring-[#e94560]/40',
                   !layer.visible && 'opacity-40'
                 )}
               >
                 {/* Drag handle */}
-                <div className="flex h-5 w-4 shrink-0 cursor-grab items-center justify-center text-white/15 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="flex h-5 w-4 shrink-0 cursor-grab items-center justify-center text-white/10 opacity-0 transition-opacity group-hover:opacity-100">
                   <GripVertical className="h-3 w-3" />
                 </div>
 
@@ -548,7 +546,7 @@ export default function LayersPanel() {
                     handleToggleVisibility(layer);
                   }}
                   className={cn(
-                    'flex h-5 w-5 shrink-0 items-center justify-center transition-colors',
+                    'flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors',
                     layer.visible
                       ? 'text-white/30 hover:text-white/60'
                       : 'text-white/15'
@@ -562,7 +560,7 @@ export default function LayersPanel() {
                 </button>
 
                 {/* Thumbnail */}
-                <div className="h-8 w-8 shrink-0 overflow-hidden rounded border border-white/[0.08] bg-white/[0.03]">
+                <div className="h-7 w-7 shrink-0 overflow-hidden rounded-md border border-white/[0.06] bg-white/[0.02]">
                   {thumbnails[layer.id] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -575,10 +573,10 @@ export default function LayersPanel() {
                       className="h-full w-full"
                       style={{
                         backgroundImage: `
-                          linear-gradient(45deg, #333 25%, transparent 25%),
-                          linear-gradient(-45deg, #333 25%, transparent 25%),
-                          linear-gradient(45deg, transparent 75%, #333 75%),
-                          linear-gradient(-45deg, transparent 75%, #333 75%)
+                          linear-gradient(45deg, #262b44 25%, transparent 25%),
+                          linear-gradient(-45deg, #262b44 25%, transparent 25%),
+                          linear-gradient(45deg, transparent 75%, #262b44 75%),
+                          linear-gradient(-45deg, transparent 75%, #262b44 75%)
                         `,
                         backgroundSize: '6px 6px',
                         backgroundPosition: '0 0, 0 3px, 3px -3px, -3px 0px',
@@ -591,7 +589,7 @@ export default function LayersPanel() {
                 {editingLayerId === layer.id ? (
                   <input
                     autoFocus
-                    className="flex-1 rounded bg-white/10 px-1.5 py-0.5 text-[11px] text-white/80 outline-none"
+                    className="flex-1 rounded-md bg-white/10 px-1.5 py-0.5 text-[11px] text-white/80 outline-none border border-[#e94560]/30"
                     value={editingName}
                     onChange={(e) => setEditingName(e.target.value)}
                     onBlur={handleFinishRename}
@@ -603,7 +601,10 @@ export default function LayersPanel() {
                   />
                 ) : (
                   <span
-                    className="flex-1 truncate text-[11px] text-white/60"
+                    className={cn(
+                      'flex-1 truncate text-[11px] transition-colors',
+                      isActive ? 'text-white/75 font-medium' : 'text-white/50'
+                    )}
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       handleStartRename(layer);
@@ -620,10 +621,10 @@ export default function LayersPanel() {
                     handleToggleLock(layer);
                   }}
                   className={cn(
-                    'flex h-5 w-5 shrink-0 items-center justify-center transition-all',
+                    'flex h-5 w-5 shrink-0 items-center justify-center rounded transition-all',
                     layer.locked
                       ? 'text-[#e94560]/70'
-                      : 'text-white/15 opacity-0 group-hover:opacity-100'
+                      : 'text-white/10 opacity-0 group-hover:opacity-100 hover:text-white/40'
                   )}
                 >
                   {layer.locked ? (
@@ -641,8 +642,8 @@ export default function LayersPanel() {
       {/* Active layer details (opacity + blend mode) */}
       {activeLayer && (
         <>
-          <Separator className="bg-white/[0.06]" />
-          <div className="shrink-0 space-y-2.5 px-3 py-2.5">
+          <div className="h-px bg-metal-sep" />
+          <div className="shrink-0 space-y-2 px-3 py-2.5">
             {/* Opacity */}
             <div className="flex items-center gap-2">
               <span className="w-14 text-[10px] font-medium uppercase tracking-wider text-white/30">
@@ -656,7 +657,7 @@ export default function LayersPanel() {
                 value={[Math.round(activeLayer.opacity * 100)]}
                 onValueChange={handleOpacityChange}
               />
-              <span className="w-8 text-right text-[10px] tabular-nums text-white/40">
+              <span className="w-8 text-right text-[10px] tabular-nums text-white/40 font-medium">
                 {Math.round(activeLayer.opacity * 100)}%
               </span>
             </div>
@@ -668,7 +669,7 @@ export default function LayersPanel() {
               </span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex flex-1 items-center justify-between rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[11px] text-white/50 transition-colors hover:bg-white/[0.06]">
+                  <button className="flex flex-1 items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-2.5 py-1.5 text-[11px] text-white/50 transition-all duration-150 hover:bg-white/[0.04] hover:border-white/[0.1]">
                     {BLEND_MODES.find((m) => m.value === activeLayer.blendMode)
                       ?.label || 'Normal'}
                     <ChevronDown className="h-3 w-3 text-white/20" />
@@ -676,14 +677,14 @@ export default function LayersPanel() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="max-h-64 overflow-y-auto bg-[#16213e]"
+                  className="max-h-64 overflow-y-auto bg-metal-card border-white/[0.08] shadow-metal-lg rounded-xl"
                 >
                   {BLEND_MODES.map((mode) => (
                     <DropdownMenuItem
                       key={mode.value}
                       onClick={() => handleBlendModeChange(mode.value)}
                       className={cn(
-                        'text-xs text-white/60',
+                        'text-xs text-white/60 px-3 py-1.5 cursor-pointer',
                         activeLayer.blendMode === mode.value &&
                           'bg-[#e94560]/10 text-[#e94560]'
                       )}
@@ -698,13 +699,13 @@ export default function LayersPanel() {
         </>
       )}
 
-      {/* Footer — 40px operations bar */}
-      <Separator className="bg-white/[0.06]" />
+      {/* Footer — operations bar */}
+      <div className="h-px bg-metal-sep" />
       <div className="flex h-10 shrink-0 items-center justify-center gap-1 px-2">
         <button
           onClick={handleDeleteLayer}
           disabled={!activeLayerId}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-white/25 transition-colors hover:bg-white/[0.06] hover:text-red-400 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white/25"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-white/20 transition-all duration-150 hover:bg-white/[0.06] hover:text-red-400 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-white/20"
           title="Delete layer"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -712,7 +713,7 @@ export default function LayersPanel() {
         <button
           onClick={handleDuplicateLayer}
           disabled={!activeLayerId}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-white/25 transition-colors hover:bg-white/[0.06] hover:text-white/60 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white/25"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-white/20 transition-all duration-150 hover:bg-white/[0.06] hover:text-white/60 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-white/20"
           title="Duplicate layer"
         >
           <Copy className="h-3.5 w-3.5" />
@@ -720,7 +721,7 @@ export default function LayersPanel() {
         <button
           onClick={handleMergeDown}
           disabled={!activeLayerId || layers.length < 2}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-white/25 transition-colors hover:bg-white/[0.06] hover:text-white/60 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white/25"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-white/20 transition-all duration-150 hover:bg-white/[0.06] hover:text-white/60 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-white/20"
           title="Merge down"
         >
           <Layers className="h-3.5 w-3.5" />

@@ -3,8 +3,6 @@
 import React, { useState, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useEditorStore } from '@/store/useEditorStore';
-import { Button } from '@/components/ui/button';
 import type { CanvasPreset, CanvasBackground } from '@/types/editor';
 
 const PRESETS: (CanvasPreset & { id: string })[] = [
@@ -68,15 +66,9 @@ export default function NewCanvasDialog({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Dialog */}
-      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#16213e] p-6 shadow-2xl shadow-black/40">
-        {/* Close button */}
+      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.08] bg-metal-elevated p-6 shadow-metal-xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-lg text-white/30 transition-colors hover:bg-white/[0.06] hover:text-white/60"
@@ -84,7 +76,6 @@ export default function NewCanvasDialog({
           <X className="h-4 w-4" />
         </button>
 
-        {/* Title */}
         <h2 className="text-base font-semibold text-white">New Canvas</h2>
         <p className="mt-1 text-xs text-white/30">
           Choose a preset size or enter custom dimensions
@@ -97,15 +88,15 @@ export default function NewCanvasDialog({
               key={preset.id}
               onClick={() => handlePresetClick(preset)}
               className={cn(
-                'flex flex-col items-center gap-1 rounded-xl border px-3 py-3 text-center transition-all',
+                'flex flex-col items-center gap-1 rounded-xl border px-3 py-3 text-center transition-all duration-150',
                 selectedPreset === preset.id
-                  ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                  : 'border-white/[0.06] bg-white/[0.02] text-white/50 hover:border-white/10 hover:bg-white/[0.04]'
+                  ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white shadow-[inset_0_1px_0_rgba(233,69,96,0.08)]'
+                  : 'border-white/[0.04] bg-white/[0.02] text-white/50 hover:border-white/[0.08] hover:bg-white/[0.04]'
               )}
             >
               <span className="text-[11px] font-medium">{preset.label}</span>
               {preset.id !== 'custom' && (
-                <span className="text-[9px] tabular-nums text-white/25">
+                <span className="text-[9px] tabular-nums text-white/20 font-mono">
                   {preset.width} × {preset.height}
                 </span>
               )}
@@ -128,10 +119,10 @@ export default function NewCanvasDialog({
                 setWidth(parseInt(e.target.value) || 0);
                 setSelectedPreset('custom');
               }}
-              className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/40 focus:ring-1 focus:ring-[#e94560]/20"
+              className="h-9 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/30"
             />
           </div>
-          <span className="mt-5 text-white/20">×</span>
+          <span className="mt-5 text-white/15">×</span>
           <div className="flex-1">
             <label className="mb-1 block text-[10px] font-medium uppercase tracking-wider text-white/30">
               Height
@@ -145,7 +136,7 @@ export default function NewCanvasDialog({
                 setHeight(parseInt(e.target.value) || 0);
                 setSelectedPreset('custom');
               }}
-              className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/40 focus:ring-1 focus:ring-[#e94560]/20"
+              className="h-9 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/30"
             />
           </div>
           <div className="mt-5 text-[10px] text-white/20">px</div>
@@ -162,17 +153,17 @@ export default function NewCanvasDialog({
                 key={bg.id}
                 onClick={() => setBackground(bg.id)}
                 className={cn(
-                  'flex items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-medium transition-all',
+                  'flex items-center gap-2 rounded-xl border px-3 py-2.5 text-[11px] font-medium transition-all duration-150',
                   background === bg.id
-                    ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                    : 'border-white/[0.06] text-white/40 hover:border-white/10'
+                    ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white'
+                    : 'border-white/[0.04] text-white/40 hover:border-white/[0.08]'
                 )}
               >
                 <div
                   className={cn(
-                    'h-4 w-4 rounded border',
+                    'h-4 w-4 rounded-md border',
                     bg.id === 'transparent'
-                      ? 'border-white/20'
+                      ? 'border-white/15'
                       : 'border-white/10'
                   )}
                   style={{
@@ -180,7 +171,7 @@ export default function NewCanvasDialog({
                       bg.id === 'transparent' ? undefined : bg.color,
                     backgroundImage:
                       bg.id === 'transparent'
-                        ? 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)'
+                        ? 'linear-gradient(45deg, #4a506e 25%, transparent 25%), linear-gradient(-45deg, #4a506e 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #4a506e 75%), linear-gradient(-45deg, transparent 75%, #4a506e 75%)'
                         : undefined,
                     backgroundSize: '6px 6px',
                     backgroundPosition: '0 0, 0 3px, 3px -3px, -3px 0px',
@@ -194,19 +185,18 @@ export default function NewCanvasDialog({
 
         {/* Create button */}
         <div className="mt-6 flex justify-end gap-2">
-          <Button
-            variant="ghost"
+          <button
             onClick={onClose}
-            className="h-9 px-4 text-xs text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+            className="h-10 px-5 rounded-xl border border-white/[0.06] bg-white/[0.02] text-xs text-white/40 hover:bg-white/[0.04] hover:text-white/60 transition-all duration-150"
           >
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={handleCreate}
-            className="h-9 bg-[#e94560] px-6 text-xs font-medium text-white hover:bg-[#e94560]/80"
+            className="h-10 px-6 rounded-xl bg-gradient-to-r from-[#e94560] to-[#ff6b6b] text-xs font-semibold text-white shadow-[0_2px_12px_rgba(233,69,96,0.25)] hover:shadow-[0_4px_20px_rgba(233,69,96,0.35)] hover:from-[#f05a73] hover:to-[#ff8080] transition-all duration-150"
           >
             Create Canvas
-          </Button>
+          </button>
         </div>
       </div>
     </div>

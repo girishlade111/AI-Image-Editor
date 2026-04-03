@@ -150,20 +150,20 @@ function EditorShellInner({
         const state = JSON.parse(e.target?.result as string);
         const canvas = canvasRef.current;
         if (!canvas || !state.canvasJSON) return;
-        
+
         canvas.loadFromJSON(state.canvasJSON, () => {
           canvas.renderAll();
           canvas.setWidth(state.canvasWidth);
           canvas.setHeight(state.canvasHeight);
           canvas.renderAll();
-          
+
           if (state.layers) setLayers(state.layers);
           if (state.adjustments) {
             Object.entries(state.adjustments).forEach(([key, value]) => {
               setAdjustment(key as any, value as number);
             });
           }
-          
+
           pushHistory(serializeCanvas(canvas));
           setHasUnsavedChanges(false);
         });
@@ -177,7 +177,7 @@ function EditorShellInner({
   const saveProject = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const state = {
       version: '1.0',
       canvasWidth: canvas.width,
@@ -187,7 +187,7 @@ function EditorShellInner({
       adjustments: store.adjustments,
       savedAt: new Date().toISOString()
     };
-    
+
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -199,7 +199,7 @@ function EditorShellInner({
   }, [canvasRef, store.layers, store.adjustments]);
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#1a1a2e]">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-metal-900">
       <TopBar
         onOpenImage={() => fileInputRef.current?.click()}
         onOpenProject={() => projectInputRef.current?.click()}
@@ -234,27 +234,30 @@ function EditorShellInner({
       <div className="flex flex-1 overflow-hidden">
         <Toolbar />
 
-        <div className="relative flex-1 overflow-hidden">
+        <div className="relative flex-1 overflow-hidden bg-metal-800">
           <EditorCanvas key={canvasKey} />
         </div>
 
-        {/* Right panel — 280px with tabs */}
-        <div className="flex w-[280px] flex-col border-l border-white/[0.06] bg-[#16213e]">
-          {/* Tab bar */}
-          <div className="flex border-b border-white/[0.06]">
+        {/* Right panel — 280px with metallic finish and tabs */}
+        <div className="flex w-[280px] flex-col border-l border-white/[0.04] bg-metal-panel">
+          {/* Tab bar — metallic with subtle gradient */}
+          <div className="flex border-b border-white/[0.04] bg-gradient-to-b from-white/[0.02] to-transparent">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex-1 px-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                className={`relative flex-1 px-1 py-2.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-150 ${
                   activeTab === tab.id
-                    ? 'text-white/80'
+                    ? 'text-white/85'
                     : 'text-white/30 hover:text-white/50'
                 }`}
               >
                 {tab.label}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-[#e94560]" />
+                  <>
+                    <span className="absolute bottom-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#e94560] to-[#ff6b6b] shadow-[0_0_8px_rgba(233,69,96,0.4)]" />
+                    <span className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#e94560]/20 to-transparent" />
+                  </>
                 )}
               </button>
             ))}
@@ -272,7 +275,20 @@ function EditorShellInner({
       </div>
 
       <AILoadingOverlay />
-      <Toaster position="bottom-right" />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'rgba(22, 26, 46, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4)',
+            color: '#e2e8f0',
+            fontSize: '12px',
+            borderRadius: '12px',
+          },
+        }}
+      />
       <CanvasResizeModal
         open={showResizeModal}
         onClose={() => setShowResizeModal(false)}

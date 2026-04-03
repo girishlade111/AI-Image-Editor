@@ -33,7 +33,7 @@ interface ExportDialogProps {
 
 export default function ExportDialog({ open, onClose }: ExportDialogProps) {
   const { canvasWidth, canvasHeight } = useEditorStore();
-  
+
   const [format, setFormat] = useState<CanvasExportFormat>('png');
   const [quality, setQuality] = useState(85);
   const [sizeMode, setSizeMode] = useState<'original' | 'custom'>('original');
@@ -45,7 +45,7 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
   const [applyEffects, setApplyEffects] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [estimatedSize, setEstimatedSize] = useState<string>('--');
+  const [estimatedSize, setEstimatedSize] = useState<string>('—');
 
   useEffect(() => {
     if (open && canvasWidth && canvasHeight) {
@@ -116,7 +116,7 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
         : format === 'jpg'
         ? Math.round(baseLength * (quality / 100))
         : baseLength;
-      
+
       if (estimatedBytes < 1024) {
         setEstimatedSize(`${estimatedBytes} B`);
       } else if (estimatedBytes < 1024 * 1024) {
@@ -212,16 +212,16 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
   return (
     <>
       <div className="fixed inset-0 z-[100] flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-        
-        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#16213e] p-6 shadow-2xl shadow-black/40 max-h-[90vh] overflow-y-auto">
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.08] bg-metal-elevated p-6 shadow-metal-xl max-h-[90vh] overflow-y-auto">
           <button onClick={onClose} className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-lg text-white/30 transition-colors hover:bg-white/[0.06] hover:text-white/60">
             <X className="h-4 w-4" />
           </button>
 
           <h2 className="text-base font-semibold text-white">Export Image</h2>
           <p className="mt-1 text-xs text-white/30">
-            Configure export settings for your design
+            Configure export settings
           </p>
 
           {/* Format Section */}
@@ -235,18 +235,18 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
                   key={f.id}
                   onClick={() => handleFormatClick(f.id)}
                   className={cn(
-                    'relative flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-[11px] font-medium transition-all',
+                    'relative flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-[11px] font-medium transition-all duration-150',
                     format === f.id && f.id !== 'svg'
-                      ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
+                      ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white shadow-[inset_0_1px_0_rgba(233,69,96,0.1)]'
                       : format === f.id && f.id === 'svg'
-                      ? 'border-white/20 bg-white/[0.04] text-white/50'
-                      : 'border-white/[0.06] bg-white/[0.02] text-white/40 hover:border-white/10 hover:bg-white/[0.04]'
+                      ? 'border-white/15 bg-white/[0.04] text-white/50'
+                      : 'border-white/[0.04] bg-white/[0.02] text-white/40 hover:border-white/[0.08] hover:bg-white/[0.04]'
                   )}
                 >
                   <f.icon className="h-3.5 w-3.5" />
                   {f.label}
                   {f.id === 'svg' && (
-                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-[#e94560] px-1.5 py-0.5 text-[8px] font-semibold text-white">
+                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-gradient-to-r from-[#e94560] to-[#ff6b6b] px-1.5 py-0.5 text-[8px] font-semibold text-white shadow-[0_2px_6px_rgba(233,69,96,0.3)]">
                       Pro
                     </span>
                   )}
@@ -255,14 +255,14 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
             </div>
           </div>
 
-          {/* Quality Section (JPG/WEBP only) */}
+          {/* Quality Section */}
           {(format === 'jpg' || format === 'webp') && (
             <div className="mt-4">
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-[10px] font-medium uppercase tracking-wider text-white/30">
                   Quality
                 </label>
-                <span className="text-[10px] text-white/50">{quality}%</span>
+                <span className="text-[10px] text-white/50 font-mono">{quality}%</span>
               </div>
               <Slider
                 value={[quality]}
@@ -284,10 +284,10 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
               <button
                 onClick={() => handlePresetClick(SIZE_PRESETS[0])}
                 className={cn(
-                  'flex-1 rounded-lg border px-3 py-2 text-[11px] font-medium transition-all',
+                  'flex-1 rounded-xl border px-3 py-2.5 text-[11px] font-medium transition-all duration-150',
                   sizeMode === 'original'
-                    ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                    : 'border-white/[0.06] text-white/40 hover:border-white/10'
+                    ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white'
+                    : 'border-white/[0.04] text-white/40 hover:border-white/[0.08]'
                 )}
               >
                 Original
@@ -295,10 +295,10 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
               <button
                 onClick={() => setSizeMode('custom')}
                 className={cn(
-                  'flex-1 rounded-lg border px-3 py-2 text-[11px] font-medium transition-all',
+                  'flex-1 rounded-xl border px-3 py-2.5 text-[11px] font-medium transition-all duration-150',
                   sizeMode === 'custom'
-                    ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                    : 'border-white/[0.06] text-white/40 hover:border-white/10'
+                    ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white'
+                    : 'border-white/[0.04] text-white/40 hover:border-white/[0.08]'
                 )}
               >
                 Custom Size
@@ -311,10 +311,10 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
                   <select
                     value={selectedPreset}
                     onChange={(e) => handlePresetClick(SIZE_PRESETS.find(p => p.id === e.target.value) || SIZE_PRESETS[0])}
-                    className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1.5 text-[11px] text-white outline-none"
+                    className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-2 text-[11px] text-white outline-none focus:border-[#e94560]/30 transition-colors"
                   >
                     {SIZE_PRESETS.map((p) => (
-                      <option key={p.id} value={p.id} className="bg-[#16213e]">
+                      <option key={p.id} value={p.id} className="bg-metal-600">
                         {p.label}
                       </option>
                     ))}
@@ -322,10 +322,10 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
                   <button
                     onClick={() => setLockAspect(!lockAspect)}
                     className={cn(
-                      'flex h-8 w-8 items-center justify-center rounded-lg border transition-all',
+                      'flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-150',
                       lockAspect
-                        ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                        : 'border-white/[0.06] text-white/40 hover:border-white/10'
+                        ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white'
+                        : 'border-white/[0.06] text-white/40 hover:border-white/[0.1]'
                     )}
                     title={lockAspect ? 'Unlock aspect ratio' : 'Lock aspect ratio'}
                   >
@@ -347,10 +347,10 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
                         setCustomWidth(parseInt(e.target.value) || 0);
                         setSelectedPreset('custom');
                       }}
-                      className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/40 focus:ring-1 focus:ring-[#e94560]/20"
+                      className="h-9 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/30"
                     />
                   </div>
-                  <span className="mt-5 text-white/20">×</span>
+                  <span className="mt-5 text-white/15">×</span>
                   <div className="flex-1">
                     <label className="mb-1 block text-[10px] font-medium uppercase tracking-wider text-white/30">
                       Height
@@ -364,7 +364,7 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
                         setCustomHeight(parseInt(e.target.value) || 0);
                         setSelectedPreset('custom');
                       }}
-                      className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/40 focus:ring-1 focus:ring-[#e94560]/20"
+                      className="h-9 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm tabular-nums text-white outline-none transition-colors focus:border-[#e94560]/30"
                     />
                   </div>
                   <div className="mt-5 text-[10px] text-white/20">px</div>
@@ -378,17 +378,17 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
             <label className="mb-2 block text-[10px] font-medium uppercase tracking-wider text-white/30">
               Options
             </label>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <button
                 onClick={() => setIncludeBackground(!includeBackground)}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-medium transition-all',
+                  'flex w-full items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-[11px] font-medium transition-all duration-150',
                   includeBackground
-                    ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                    : 'border-white/[0.06] text-white/40 hover:border-white/10'
+                    ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white'
+                    : 'border-white/[0.04] text-white/40 hover:border-white/[0.08]'
                 )}
               >
-                <div className={cn('flex h-4 w-4 items-center justify-center rounded border', includeBackground ? 'bg-[#e94560] border-[#e94560]' : 'border-white/20')}>
+                <div className={cn('flex h-4 w-4 items-center justify-center rounded-md border transition-all', includeBackground ? 'bg-[#e94560] border-[#e94560] shadow-[0_1px_3px_rgba(233,69,96,0.3)]' : 'border-white/15')}>
                   {includeBackground && <Check className="h-3 w-3 text-white" />}
                 </div>
                 Include background
@@ -396,13 +396,13 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
               <button
                 onClick={() => setApplyEffects(!applyEffects)}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-medium transition-all',
+                  'flex w-full items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-[11px] font-medium transition-all duration-150',
                   applyEffects
-                    ? 'border-[#e94560]/50 bg-[#e94560]/10 text-white'
-                    : 'border-white/[0.06] text-white/40 hover:border-white/10'
+                    ? 'border-[#e94560]/40 bg-[#e94560]/10 text-white'
+                    : 'border-white/[0.04] text-white/40 hover:border-white/[0.08]'
                 )}
               >
-                <div className={cn('flex h-4 w-4 items-center justify-center rounded border', applyEffects ? 'bg-[#e94560] border-[#e94560]' : 'border-white/20')}>
+                <div className={cn('flex h-4 w-4 items-center justify-center rounded-md border transition-all', applyEffects ? 'bg-[#e94560] border-[#e94560] shadow-[0_1px_3px_rgba(233,69,96,0.3)]' : 'border-white/15')}>
                   {applyEffects && <Check className="h-3 w-3 text-white" />}
                 </div>
                 Apply all effects before export
@@ -415,23 +415,24 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
             <label className="mb-2 block text-[10px] font-medium uppercase tracking-wider text-white/30">
               Preview
             </label>
-            <div className="relative flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
-              <div className="relative h-20 w-20 overflow-hidden rounded-lg bg-white/5">
+            <div className="relative flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-3">
+              <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-white/[0.03] border border-white/[0.04]">
                 {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={previewUrl} alt="Preview" className="h-full w-full object-contain" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-white/20">
+                  <div className="flex h-full w-full items-center justify-center text-white/15">
                     <Image className="h-8 w-8" />
                   </div>
                 )}
-                <div className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[8px] font-semibold text-white">
+                <div className="absolute bottom-1 right-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[8px] font-semibold text-white backdrop-blur-sm">
                   {format.toUpperCase()}
                 </div>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-white/30">Estimated size</span>
-                <span className="text-sm font-medium text-white">{estimatedSize}</span>
-                <span className="text-[10px] text-white/30">
+                <span className="text-sm font-semibold text-white">{estimatedSize}</span>
+                <span className="text-[10px] text-white/30 font-mono">
                   {sizeMode === 'original' ? `${canvasWidth} × ${canvasHeight}` : `${customWidth} × ${customHeight}`}
                 </span>
               </div>
@@ -440,13 +441,19 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
 
           {/* Buttons */}
           <div className="mt-6 flex gap-2">
-            <Button variant="ghost" onClick={onClose} className="h-9 flex-1 text-xs text-white/40 hover:bg-white/[0.06] hover:text-white/60">
+            <button
+              onClick={onClose}
+              className="h-10 flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] text-xs text-white/50 hover:bg-white/[0.04] hover:text-white/70 transition-all duration-150"
+            >
               Cancel
-            </Button>
-            <Button onClick={exportImage} className="h-9 flex-1 bg-[#e94560] px-6 text-xs font-medium text-white hover:bg-[#e94560]/80">
-              <Download className="mr-1.5 h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={exportImage}
+              className="h-10 flex-1 rounded-xl bg-gradient-to-r from-[#e94560] to-[#ff6b6b] px-6 text-xs font-semibold text-white shadow-[0_2px_12px_rgba(233,69,96,0.25)] hover:shadow-[0_4px_20px_rgba(233,69,96,0.35)] hover:from-[#f05a73] hover:to-[#ff8080] transition-all duration-150 flex items-center justify-center gap-1.5"
+            >
+              <Download className="h-3.5 w-3.5" />
               Export Now
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -455,18 +462,24 @@ export default function ExportDialog({ open, onClose }: ExportDialogProps) {
       {showUpgradeModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowUpgradeModal(false)} />
-          <div className="relative z-10 w-full max-w-sm rounded-2xl border border-white/[0.08] bg-[#16213e] p-6 shadow-2xl">
+          <div className="relative z-10 w-full max-w-sm rounded-2xl border border-white/[0.08] bg-metal-elevated p-6 shadow-metal-xl">
             <h3 className="text-base font-semibold text-white">Upgrade to Pro</h3>
             <p className="mt-2 text-xs text-white/50">
               SVG export is available for Pro users. Upgrade now to unlock this feature and more.
             </p>
             <div className="mt-5 flex gap-2">
-              <Button variant="ghost" onClick={() => setShowUpgradeModal(false)} className="h-9 flex-1 text-xs text-white/40">
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="h-10 flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] text-xs text-white/50 hover:bg-white/[0.04] transition-all duration-150"
+              >
                 Not now
-              </Button>
-              <Button onClick={() => setShowUpgradeModal(false)} className="h-9 flex-1 bg-[#e94560] text-xs font-medium">
+              </button>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="h-10 flex-1 rounded-xl bg-gradient-to-r from-[#e94560] to-[#ff6b6b] text-xs font-semibold text-white shadow-[0_2px_12px_rgba(233,69,96,0.25)] transition-all duration-150"
+              >
                 Upgrade
-              </Button>
+              </button>
             </div>
           </div>
         </div>

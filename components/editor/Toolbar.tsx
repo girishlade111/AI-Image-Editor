@@ -23,7 +23,6 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/separator';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   MousePointer2,
@@ -52,9 +51,9 @@ export default function Toolbar() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex h-full w-14 flex-col items-center border-r border-white/[0.06] bg-[#16213e]">
+      <div className="flex h-full w-14 flex-col items-center bg-metal-toolbar border-r border-white/[0.04] shadow-[2px_0_12px_rgba(0,0,0,0.2)]">
         {/* ── Tool buttons ────────────────────────────────── */}
-        <div className="flex flex-col items-center gap-0.5 py-3">
+        <div className="flex flex-col items-center gap-1 py-3">
           {TOOLS.map((tool, idx) => {
             const Icon = ICON_MAP[tool.icon];
             const isActive = activeTool === tool.id;
@@ -63,31 +62,31 @@ export default function Toolbar() {
               <React.Fragment key={tool.id}>
                 {/* Separators between tool groups */}
                 {(idx === 2 || idx === 4) && (
-                  <Separator className="my-1.5 w-7 bg-white/[0.06]" />
+                  <div className="my-1.5 w-7 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
                 )}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setActiveTool(tool.id as ToolType)}
                       className={cn(
-                        'group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150',
+                        'group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150',
                         isActive
-                          ? 'bg-[#e94560] text-white shadow-lg shadow-[#e94560]/25'
-                          : 'text-white/40 hover:bg-white/[0.06] hover:text-white/80'
+                          ? 'bg-gradient-to-b from-[#e94560] to-[#d63d56] text-white shadow-[0_2px_8px_rgba(233,69,96,0.3),inset_0_1px_0_rgba(255,255,255,0.15)]'
+                          : 'text-white/35 hover:bg-white/[0.06] hover:text-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
                       )}
                     >
                       {Icon && (
-                        <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                        <Icon className="h-[18px] w-[18px]" strokeWidth={isActive ? 2 : 1.8} />
                       )}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent
                     side="right"
                     sideOffset={8}
-                    className="border-white/10 bg-[#0f3460] text-xs text-white"
+                    className="border-white/[0.08] bg-metal-card text-xs text-white/80 shadow-metal-lg rounded-lg"
                   >
                     {tool.label}
-                    <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px]">
+                    <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px] text-white/60">
                       {tool.shortcut}
                     </span>
                   </TooltipContent>
@@ -104,14 +103,14 @@ export default function Toolbar() {
         <div className="flex flex-col items-center gap-3 pb-4">
           {/* Brush size display */}
           {(activeTool === 'brush' || activeTool === 'eraser') && (
-            <div className="flex h-6 items-center justify-center rounded bg-white/[0.04] px-2">
-              <span className="text-[10px] tabular-nums text-white/40">
+            <div className="flex h-6 items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.04] px-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]">
+              <span className="text-[10px] tabular-nums text-white/40 font-medium">
                 {brushSize}px
               </span>
             </div>
           )}
 
-          <Separator className="w-7 bg-white/[0.06]" />
+          <div className="w-7 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
           {/* Color swatches */}
           <div className="relative h-12 w-10">
@@ -120,14 +119,14 @@ export default function Toolbar() {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => bgInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 h-7 w-7 rounded-md border-2 border-[#16213e] shadow-sm transition-transform hover:scale-110"
+                  className="absolute bottom-0 right-0 h-7 w-7 rounded-lg border-2 border-metal-600 shadow-[0_2px_6px_rgba(0,0,0,0.3)] transition-all duration-150 hover:scale-110 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
                   style={{ backgroundColor: bgColor }}
                 />
               </TooltipTrigger>
               <TooltipContent
                 side="right"
                 sideOffset={8}
-                className="border-white/10 bg-[#0f3460] text-xs text-white"
+                className="border-white/[0.08] bg-metal-card text-xs text-white/80 shadow-metal-lg rounded-lg"
               >
                 Background Color
               </TooltipContent>
@@ -138,14 +137,14 @@ export default function Toolbar() {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => fgInputRef.current?.click()}
-                  className="absolute left-0 top-0 z-10 h-7 w-7 rounded-md border-2 border-[#16213e] shadow-lg transition-transform hover:scale-110"
+                  className="absolute left-0 top-0 z-10 h-7 w-7 rounded-lg border-2 border-metal-500 shadow-[0_2px_8px_rgba(0,0,0,0.4)] transition-all duration-150 hover:scale-110 hover:shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
                   style={{ backgroundColor: brushColor }}
                 />
               </TooltipTrigger>
               <TooltipContent
                 side="right"
                 sideOffset={8}
-                className="border-white/10 bg-[#0f3460] text-xs text-white"
+                className="border-white/[0.08] bg-metal-card text-xs text-white/80 shadow-metal-lg rounded-lg"
               >
                 Foreground Color
               </TooltipContent>
@@ -173,7 +172,7 @@ export default function Toolbar() {
             <TooltipTrigger asChild>
               <button
                 onClick={swapColors}
-                className="flex h-6 w-6 items-center justify-center rounded text-white/25 transition-colors hover:bg-white/[0.06] hover:text-white/50"
+                className="flex h-6 w-6 items-center justify-center rounded-lg text-white/25 hover:bg-white/[0.06] hover:text-white/50 transition-all duration-150"
               >
                 <ArrowUpDown className="h-3 w-3" />
               </button>
@@ -181,7 +180,7 @@ export default function Toolbar() {
             <TooltipContent
               side="right"
               sideOffset={8}
-              className="border-white/10 bg-[#0f3460] text-xs text-white"
+              className="border-white/[0.08] bg-metal-card text-xs text-white/80 shadow-metal-lg rounded-lg"
             >
               Swap Colors
             </TooltipContent>

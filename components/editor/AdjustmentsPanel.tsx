@@ -60,29 +60,24 @@ const SECTIONS: { id: AdjustmentSection; label: string; sliders: SliderDef[] }[]
 function buildFilters(adj: AdjustmentsState): any[] {
   const filters: any[] = [];
 
-  // Brightness (exposure approximated as extra brightness)
   const totalBrightness = (adj.brightness + adj.exposure) / 100;
   if (totalBrightness !== 0) {
     filters.push(new fabric.Image.filters.Brightness({ brightness: totalBrightness }));
   }
 
-  // Contrast
   if (adj.contrast !== 0) {
     filters.push(new fabric.Image.filters.Contrast({ contrast: adj.contrast / 100 }));
   }
 
-  // Saturation (+ vibrance approximated as partial saturation)
   const totalSat = (adj.saturation + adj.vibrance * 0.5) / 100;
   if (totalSat !== 0) {
     filters.push(new fabric.Image.filters.Saturation({ saturation: totalSat }));
   }
 
-  // Hue rotation
   if (adj.hue !== 0) {
     filters.push(new fabric.Image.filters.HueRotation({ rotation: adj.hue / 360 }));
   }
 
-  // Temperature (warm/cool via ColorMatrix)
   if (adj.temperature !== 0) {
     const t = adj.temperature / 100;
     filters.push(new fabric.Image.filters.ColorMatrix({
@@ -95,7 +90,6 @@ function buildFilters(adj: AdjustmentsState): any[] {
     }));
   }
 
-  // Tint (green/magenta via ColorMatrix)
   if (adj.tint !== 0) {
     const ti = adj.tint / 100;
     filters.push(new fabric.Image.filters.ColorMatrix({
@@ -108,24 +102,20 @@ function buildFilters(adj: AdjustmentsState): any[] {
     }));
   }
 
-  // Shadows (brighten darks — approximate via brightness + gamma)
   if (adj.shadows !== 0) {
     const s = adj.shadows / 100;
     filters.push(new fabric.Image.filters.Brightness({ brightness: s * 0.15 }));
   }
 
-  // Highlights (darken brights — approximate)
   if (adj.highlights !== 0) {
     const h = adj.highlights / 100;
     filters.push(new fabric.Image.filters.Brightness({ brightness: h * 0.15 }));
   }
 
-  // Clarity (approximate as contrast boost)
   if (adj.clarity !== 0) {
     filters.push(new fabric.Image.filters.Contrast({ contrast: adj.clarity / 200 }));
   }
 
-  // Sharpness (Convolve)
   if (adj.sharpness > 0) {
     const strength = adj.sharpness / 100;
     const center = 1 + 4 * strength;
@@ -135,7 +125,6 @@ function buildFilters(adj: AdjustmentsState): any[] {
     }));
   }
 
-  // Noise reduction (slight blur)
   if (adj.noiseReduction > 0) {
     filters.push(new fabric.Image.filters.Blur({ blur: adj.noiseReduction / 500 }));
   }
@@ -145,7 +134,6 @@ function buildFilters(adj: AdjustmentsState): any[] {
 
 // ── Apply vignette overlay ─────────────────────────────────
 function applyVignette(canvas: any, adj: AdjustmentsState) {
-  // Remove existing vignette
   const objects = canvas.getObjects();
   const existing = objects.find((o: any) => o.__vignetteOverlay);
   if (existing) canvas.remove(existing);
@@ -163,13 +151,11 @@ function applyVignette(canvas: any, adj: AdjustmentsState) {
   const isLight = adj.vignetteAmount < 0;
   const baseColor = isLight ? '255,255,255' : '0,0,0';
 
-  // Calculate inner (transparent) and outer (dark/light) radii
   const minDim = Math.min(w, h);
   const maxDim = Math.max(w, h);
   const innerR = midpoint * minDim * 0.4;
   const outerR = innerR + feather * maxDim * 0.6 + minDim * 0.1;
 
-  // Use a full-canvas rectangle with radial gradient centered
   const rect = new fabric.Rect({
     left: 0,
     top: 0,
@@ -229,7 +215,6 @@ export default function AdjustmentsPanel() {
     setCollapsed((c) => ({ ...c, [id]: !c[id] }));
   }, []);
 
-  // Apply filters with rAF throttle
   const applyAllFilters = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
@@ -259,7 +244,6 @@ export default function AdjustmentsPanel() {
     });
   }, [canvasRef]);
 
-  // Re-apply when adjustments or target changes
   useEffect(() => {
     applyAllFilters();
   }, [adjustments, adjustmentTarget, activeLayerId, applyAllFilters]);
@@ -278,33 +262,36 @@ export default function AdjustmentsPanel() {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-white/40">
-            Adjustments
-          </span>
-        </div>
+      <div className="flex items-center justify-between px-3 py-2.5">
+        <span className="text-xs font-semibold uppercase tracking-wider text-white/40">
+          Adjustments
+        </span>
         <button
           onClick={handleResetAll}
-          className="rounded p-1 text-white/30 hover:bg-white/5 hover:text-white/60"
+          className="rounded-lg p-1.5 text-white/25 hover:bg-white/[0.06] hover:text-white/60 transition-all duration-150"
           title="Reset All"
         >
           <RotateCcw className="h-3.5 w-3.5" />
         </button>
       </div>
 
+      {/* Separator */}
+      <div className="h-px bg-metal-sep" />
+
       {/* Target selector */}
-      <div className="flex items-center gap-2 border-t border-white/[0.06] px-3 py-1.5">
-        <span className="text-[10px] text-white/30">Apply to:</span>
+      <div className="flex items-center gap-2 px-3 py-2">
+        <span className="text-[10px] text-white/30 font-medium">Apply to:</span>
         <select
           value={adjustmentTarget}
           onChange={(e) => setAdjustmentTarget(e.target.value as any)}
-          className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-white/60 outline-none"
+          className="rounded-lg bg-white/[0.04] border border-white/[0.06] px-2 py-1 text-[10px] text-white/60 outline-none focus:border-[#e94560]/30 transition-colors"
         >
-          <option value="selected">Selected Layer</option>
-          <option value="all">All Layers</option>
+          <option value="selected" className="bg-metal-600">Selected Layer</option>
+          <option value="all" className="bg-metal-600">All Layers</option>
         </select>
       </div>
+
+      <div className="h-px bg-metal-sep" />
 
       {/* Sections */}
       <ScrollArea className="flex-1">
@@ -312,25 +299,30 @@ export default function AdjustmentsPanel() {
           {SECTIONS.map((section) => {
             const isCollapsed = collapsed[section.id];
             return (
-              <div key={section.id} className="border-t border-white/[0.06]">
+              <div key={section.id}>
                 {/* Section header */}
                 <div className="flex items-center justify-between px-3 py-2">
                   <button
                     className="flex flex-1 items-center gap-1.5"
                     onClick={() => toggleSection(section.id)}
                   >
-                    {isCollapsed ? (
-                      <ChevronRight className="h-3 w-3 text-white/30" />
-                    ) : (
-                      <ChevronDown className="h-3 w-3 text-white/30" />
-                    )}
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-white/50">
+                    <div className={cn(
+                      'flex h-4 w-4 items-center justify-center rounded transition-all duration-150',
+                      isCollapsed ? 'text-white/20' : 'text-white/30'
+                    )}>
+                      {isCollapsed ? (
+                        <ChevronRight className="h-3 w-3" />
+                      ) : (
+                        <ChevronDown className="h-3 w-3" />
+                      )}
+                    </div>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
                       {section.label}
                     </span>
                   </button>
                   <button
                     onClick={() => resetAdjustmentSection(section.id)}
-                    className="rounded p-0.5 text-white/20 hover:bg-white/5 hover:text-white/50"
+                    className="rounded-lg p-1 text-white/15 hover:bg-white/[0.06] hover:text-white/50 transition-all duration-150"
                     title={`Reset ${section.label}`}
                   >
                     <RotateCcw className="h-3 w-3" />
@@ -341,12 +333,12 @@ export default function AdjustmentsPanel() {
                 {!isCollapsed && (
                   <div className="flex flex-col gap-3 px-3 pb-3">
                     {section.sliders.map((slider) => (
-                      <div key={slider.key} className="flex flex-col gap-1">
+                      <div key={slider.key} className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] text-white/50">
+                          <span className="text-[11px] text-white/45 font-medium">
                             {slider.label}
                           </span>
-                          <span className="min-w-[28px] text-right text-[10px] tabular-nums text-white/30">
+                          <span className="min-w-[28px] text-right text-[10px] tabular-nums text-white/30 font-mono">
                             {adjustments[slider.key]}
                           </span>
                         </div>
@@ -364,6 +356,9 @@ export default function AdjustmentsPanel() {
                     ))}
                   </div>
                 )}
+
+                {/* Section separator */}
+                {!isCollapsed && <div className="h-px bg-metal-sep mx-3" />}
               </div>
             );
           })}
@@ -371,4 +366,9 @@ export default function AdjustmentsPanel() {
       </ScrollArea>
     </div>
   );
+}
+
+// Simple cn helper for inline use
+function cn(...classes: (string | false | undefined | null)[]) {
+  return classes.filter(Boolean).join(' ');
 }

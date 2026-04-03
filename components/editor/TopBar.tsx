@@ -9,7 +9,7 @@ import {
   Undo2,
   Redo2,
   ChevronDown,
-  Link,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEditorStore } from '@/store/useEditorStore';
@@ -126,55 +126,51 @@ export default function TopBar({
   );
 
   return (
-    <div className="flex h-12 w-full items-center justify-between bg-[#0f3460] px-3">
+    <div className="flex h-12 w-full items-center justify-between bg-metal-topbar border-b border-white/[0.04] shadow-[0_2px_12px_rgba(0,0,0,0.3)]">
       {/* LEFT Section */}
       <div className="flex items-center gap-3">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-[#e94560]">LS</span>
-          <span className="text-sm font-medium text-white">Editor</span>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-[#e94560] to-[#ff6b6b] shadow-[0_2px_8px_rgba(233,69,96,0.3)]">
+            <Sparkles className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-sm font-semibold text-white/90 tracking-tight">LadeStack</span>
         </div>
 
-        <Separator orientation="vertical" className="h-5 bg-white/[0.08]" />
+        <Separator orientation="vertical" className="h-5 bg-white/[0.06]" />
 
         {/* File actions */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           {/* New Button */}
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleNewClick}
-            className="flex items-center gap-1.5 text-white/70 hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/60 hover:text-white/90 hover:bg-white/[0.06] transition-all duration-150"
           >
-            <Plus className="h-4 w-4" />
-            <span className="text-xs">New</span>
-          </Button>
+            <Plus className="h-3.5 w-3.5" />
+            <span className="text-[11px] font-medium">New</span>
+          </button>
 
           {/* Open Button with Dropdown */}
           <DropdownMenu open={showOpenMenu} onOpenChange={setShowOpenMenu}>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1.5 text-white/70 hover:bg-white/[0.06] hover:text-white"
-              >
-                <FolderOpen className="h-4 w-4" />
-                <span className="text-xs">Open</span>
-              </Button>
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/60 hover:text-white/90 hover:bg-white/[0.06] transition-all duration-150">
+                <FolderOpen className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-medium">Open</span>
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-44 bg-[#16213e] border-white/10">
+            <DropdownMenuContent align="start" className="w-48 bg-metal-card border-white/[0.08] shadow-metal-lg rounded-xl overflow-hidden">
               <DropdownMenuItem
                 onClick={handleOpenImage}
-                className="text-white/70 focus:bg-white/10 focus:text-white"
+                className="text-white/70 focus:bg-white/[0.06] focus:text-white px-3 py-2 text-xs cursor-pointer"
               >
-                <Link className="mr-2 h-4 w-4" />
+                <FolderOpen className="mr-2.5 h-3.5 w-3.5 text-white/40" />
                 Open Image
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleOpenProject}
-                className="text-white/70 focus:bg-white/10 focus:text-white"
+                className="text-white/70 focus:bg-white/[0.06] focus:text-white px-3 py-2 text-xs cursor-pointer"
               >
-                <FolderOpen className="mr-2 h-4 w-4" />
+                <FolderOpen className="mr-2.5 h-3.5 w-3.5 text-white/40" />
                 Open Project (.json)
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -185,73 +181,67 @@ export default function TopBar({
       {/* CENTER Section */}
       <div className="flex items-center gap-1">
         {/* Undo */}
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={undo}
           disabled={historyIndex <= 0}
           className={cn(
-            'h-7 w-7 text-white/50 hover:bg-white/[0.06] hover:text-white/80',
-            historyIndex <= 0 && 'cursor-not-allowed opacity-30'
+            'flex h-7 w-7 items-center justify-center rounded-lg transition-all duration-150',
+            historyIndex <= 0
+              ? 'text-white/15 cursor-not-allowed'
+              : 'text-white/40 hover:bg-white/[0.06] hover:text-white/80'
           )}
           title="Undo (Ctrl+Z)"
         >
-          <Undo2 className="h-4 w-4" strokeWidth={1.6} />
-        </Button>
+          <Undo2 className="h-3.5 w-3.5" strokeWidth={1.8} />
+        </button>
 
         {/* Redo */}
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={redo}
           disabled={historyIndex >= history.length - 1}
           className={cn(
-            'h-7 w-7 text-white/50 hover:bg-white/[0.06] hover:text-white/80',
-            historyIndex >= history.length - 1 && 'cursor-not-allowed opacity-30'
+            'flex h-7 w-7 items-center justify-center rounded-lg transition-all duration-150',
+            historyIndex >= history.length - 1
+              ? 'text-white/15 cursor-not-allowed'
+              : 'text-white/40 hover:bg-white/[0.06] hover:text-white/80'
           )}
           title="Redo (Ctrl+Shift+Z)"
         >
-          <Redo2 className="h-4 w-4" strokeWidth={1.6} />
-        </Button>
+          <Redo2 className="h-3.5 w-3.5" strokeWidth={1.8} />
+        </button>
 
-        <Separator orientation="vertical" className="mx-1.5 h-5 bg-white/[0.08]" />
+        <Separator orientation="vertical" className="mx-1.5 h-5 bg-white/[0.06]" />
 
         {/* Canvas Size Display */}
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={onResizeCanvas}
-          className="flex items-center gap-1 text-white/70 hover:bg-white/[0.06] hover:text-white"
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-white/50 hover:bg-white/[0.06] hover:text-white/80 transition-all duration-150"
         >
-          <span className="text-xs tabular-nums">
+          <span className="text-[11px] tabular-nums font-medium">
             {canvasWidth} × {canvasHeight}
           </span>
-        </Button>
+        </button>
 
-        <Separator orientation="vertical" className="mx-1.5 h-5 bg-white/[0.08]" />
+        <Separator orientation="vertical" className="mx-1.5 h-5 bg-white/[0.06]" />
 
         {/* Zoom Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-1 text-white/70 hover:bg-white/[0.06] hover:text-white"
-            >
-              <span className="min-w-[46px] text-center text-xs tabular-nums">
+            <button className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-white/50 hover:bg-white/[0.06] hover:text-white/80 transition-all duration-150">
+              <span className="min-w-[46px] text-center text-[11px] tabular-nums font-medium">
                 {formatZoom(zoom)}
               </span>
-              <ChevronDown className="h-3 w-3" />
-            </Button>
+              <ChevronDown className="h-3 w-3 text-white/30" />
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-32 bg-[#16213e] border-white/10">
+          <DropdownMenuContent align="start" className="w-36 bg-metal-card border-white/[0.08] shadow-metal-lg rounded-xl overflow-hidden">
             {zoomPresets.map((preset) => (
               <DropdownMenuItem
                 key={preset.label}
                 onClick={() => handleZoomSelect(preset.value)}
                 className={cn(
-                  'text-xs text-white/70 focus:bg-white/10 focus:text-white',
-                  formatZoom(zoom) === preset.label && 'bg-white/5 text-white'
+                  'text-xs text-white/70 focus:bg-white/[0.06] focus:text-white px-3 py-1.5 cursor-pointer',
+                  formatZoom(zoom) === preset.label && 'text-white bg-white/[0.04]'
                 )}
               >
                 {preset.label}
@@ -262,29 +252,26 @@ export default function TopBar({
       </div>
 
       {/* RIGHT Section */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         {/* Save Button */}
-        <Button
-          variant="outline"
-          size="sm"
+        <button
           onClick={handleSave}
-          className="flex items-center gap-1.5 border-white/20 text-white/70 hover:bg-white/[0.06] hover:text-white"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-white/60 hover:bg-white/[0.06] hover:text-white/90 hover:border-white/[0.12] transition-all duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
         >
-          <Download className="h-4 w-4" />
-          <span className="text-xs">Save</span>
-        </Button>
+          <Download className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-medium">Save</span>
+        </button>
 
         {/* Export Button */}
-        <Button
-          size="sm"
+        <button
           onClick={onExport}
-          className="flex items-center gap-1.5 bg-[#e94560] text-white hover:bg-[#e94560]/80"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#e94560] to-[#ff6b6b] text-white text-[11px] font-medium shadow-[0_2px_8px_rgba(233,69,96,0.25)] hover:shadow-[0_4px_16px_rgba(233,69,96,0.35)] hover:from-[#f05a73] hover:to-[#ff8080] transition-all duration-150"
         >
-          <Share className="h-4 w-4" />
-          <span className="text-xs">Export</span>
-        </Button>
+          <Share className="h-3.5 w-3.5" />
+          <span>Export</span>
+        </button>
 
-        <Separator orientation="vertical" className="mx-1.5 h-5 bg-white/[0.08]" />
+        <Separator orientation="vertical" className="mx-1 h-5 bg-white/[0.06]" />
 
         {/* Pro Badge */}
         <a
@@ -293,7 +280,7 @@ export default function TopBar({
             e.preventDefault();
             window.open('#', '_blank');
           }}
-          className="flex items-center rounded-full bg-gradient-to-r from-[#e94560] to-[#ff6b6b] px-3 py-1 text-[10px] font-bold text-white shadow-lg shadow-[#e94560]/20 transition-opacity hover:opacity-90"
+          className="flex items-center rounded-full bg-gradient-to-r from-[#e94560] to-[#ff6b6b] px-2.5 py-0.5 text-[9px] font-bold text-white shadow-[0_2px_8px_rgba(233,69,96,0.3)] transition-all duration-150 hover:shadow-[0_4px_16px_rgba(233,69,96,0.4)] hover:scale-105"
         >
           PRO
         </a>
