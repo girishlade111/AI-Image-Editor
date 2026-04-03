@@ -7,6 +7,7 @@ import EditorCanvas from './EditorCanvas';
 import LayersPanel from './LayersPanel';
 import AdjustmentsPanel from './AdjustmentsPanel';
 import FiltersPanel from './FiltersPanel';
+import PropertiesPanel from './PropertiesPanel';
 import NewCanvasDialog from './NewCanvasDialog';
 import { useEditorStore } from '@/store/useEditorStore';
 import { CanvasProvider } from '@/contexts/CanvasContext';
@@ -85,13 +86,7 @@ export default function EditorShell() {
             {activeTab === 'layers' && <LayersPanel />}
             {activeTab === 'adjust' && <AdjustmentsPanel />}
             {activeTab === 'filters' && <FiltersPanel />}
-            {activeTab === 'properties' && (
-              <div className="flex h-full items-center justify-center">
-                <span className="text-[11px] text-white/20">
-                  Select an object to view properties
-                </span>
-              </div>
-            )}
+            {activeTab === 'properties' && <PropertiesPanel />}
           </div>
         </div>
       </div>
