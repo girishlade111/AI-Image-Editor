@@ -9,13 +9,21 @@ import AdjustmentsPanel from './AdjustmentsPanel';
 import NewCanvasDialog from './NewCanvasDialog';
 import { useEditorStore } from '@/store/useEditorStore';
 import { CanvasProvider } from '@/contexts/CanvasContext';
-import { Separator } from '@/components/ui/separator';
+
+const TABS = [
+  { id: 'layers', label: 'Layers' },
+  { id: 'adjustments', label: 'Adjustments' },
+  { id: 'properties', label: 'Properties' },
+] as const;
+
+type TabId = (typeof TABS)[number]['id'];
 
 export default function EditorShell() {
   const showNewCanvasDialog = useEditorStore((s) => s.showNewCanvasDialog);
   const setShowNewCanvasDialog = useEditorStore((s) => s.setShowNewCanvasDialog);
   const setCanvasSize = useEditorStore((s) => s.setCanvasSize);
   const [canvasKey, setCanvasKey] = useState(0);
+  const [activeTab, setActiveTab] = useState<TabId>('layers');
   const [pendingCanvas, setPendingCanvas] = useState<{
     width: number;
     height: number;
@@ -27,7 +35,6 @@ export default function EditorShell() {
       setCanvasSize(width, height);
       setPendingCanvas({ width, height, bg });
       setShowNewCanvasDialog(false);
-      // Force canvas remount with new dimensions
       setCanvasKey((k) => k + 1);
     },
     [setCanvasSize, setShowNewCanvasDialog]
@@ -40,34 +47,52 @@ export default function EditorShell() {
   return (
     <CanvasProvider>
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#1a1a2e]">
-      {/* Top bar — 48px */}
       <TopBar />
 
-      {/* Main area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left toolbar — 56px */}
         <Toolbar />
 
-        {/* Center canvas — fills remaining space */}
         <div className="relative flex-1 overflow-hidden">
           <EditorCanvas key={canvasKey} />
         </div>
 
-        {/* Right panel — 280px */}
+        {/* Right panel — 280px with tabs */}
         <div className="flex w-[280px] flex-col border-l border-white/[0.06] bg-[#16213e]">
-          {/* Layers — top half */}
-          <div className="flex-1 overflow-hidden">
-            <LayersPanel />
+          {/* Tab bar */}
+          <div className="flex border-b border-white/[0.06]">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative flex-1 px-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                  activeTab === tab.id
+                    ? 'text-white/80'
+                    : 'text-white/30 hover:text-white/50'
+                }`}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <span className="absolute bottom-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-[#e94560]" />
+                )}
+              </button>
+            ))}
           </div>
-          <Separator className="bg-white/[0.06]" />
-          {/* Adjustments — bottom half */}
+
+          {/* Tab content */}
           <div className="flex-1 overflow-hidden">
-            <AdjustmentsPanel />
+            {activeTab === 'layers' && <LayersPanel />}
+            {activeTab === 'adjustments' && <AdjustmentsPanel />}
+            {activeTab === 'properties' && (
+              <div className="flex h-full items-center justify-center">
+                <span className="text-[11px] text-white/20">
+                  Select an object to view properties
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* New Canvas Dialog */}
       <NewCanvasDialog
         open={showNewCanvasDialog}
         onClose={handleCloseDialog}

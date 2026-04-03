@@ -63,6 +63,8 @@ export interface EditorState {
   showNewCanvasDialog: boolean;
   canvasReady: boolean;
   isCropping: boolean;
+  adjustments: AdjustmentsState;
+  adjustmentTarget: AdjustmentTarget;
 }
 
 export interface EditorActions {
@@ -86,6 +88,36 @@ export interface EditorActions {
   setShowNewCanvasDialog: (val: boolean) => void;
   setCanvasReady: (val: boolean) => void;
   setIsCropping: (val: boolean) => void;
+  setAdjustment: (key: AdjustmentKey, value: number) => void;
+  resetAdjustments: () => void;
+  resetAdjustmentSection: (section: AdjustmentSection) => void;
+  setAdjustmentTarget: (target: AdjustmentTarget) => void;
 }
+
+// ── Adjustments ─────────────────────────────────────────
+export interface AdjustmentsState {
+  brightness: number;
+  contrast: number;
+  exposure: number;
+  shadows: number;
+  highlights: number;
+  saturation: number;
+  vibrance: number;
+  hue: number;
+  temperature: number;
+  tint: number;
+  sharpness: number;
+  clarity: number;
+  noiseReduction: number;
+  vignetteAmount: number;
+  vignetteMidpoint: number;
+  vignetteFeather: number;
+}
+
+export type AdjustmentKey = keyof AdjustmentsState;
+
+export type AdjustmentSection = 'tone' | 'color' | 'detail' | 'vignette';
+
+export type AdjustmentTarget = 'selected' | 'all';
 
 export type EditorStore = EditorState & EditorActions;

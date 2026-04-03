@@ -1,5 +1,21 @@
 import { create } from 'zustand';
-import type { EditorStore, LayerItem, ToolType } from '@/types/editor';
+import type { EditorStore, LayerItem, ToolType, AdjustmentKey, AdjustmentSection, AdjustmentTarget, AdjustmentsState } from '@/types/editor';
+
+const DEFAULT_ADJUSTMENTS: AdjustmentsState = {
+  brightness: 0, contrast: 0, exposure: 0,
+  shadows: 0, highlights: 0,
+  saturation: 0, vibrance: 0, hue: 0,
+  temperature: 0, tint: 0,
+  sharpness: 0, clarity: 0, noiseReduction: 0,
+  vignetteAmount: 0, vignetteMidpoint: 50, vignetteFeather: 50,
+};
+
+const SECTION_KEYS: Record<AdjustmentSection, (keyof AdjustmentsState)[]> = {
+  tone: ['brightness', 'contrast', 'exposure', 'shadows', 'highlights'],
+  color: ['saturation', 'vibrance', 'hue', 'temperature', 'tint'],
+  detail: ['sharpness', 'clarity', 'noiseReduction'],
+  vignette: ['vignetteAmount', 'vignetteMidpoint', 'vignetteFeather'],
+};
 
 const MAX_HISTORY = 50;
 
@@ -22,6 +38,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   showNewCanvasDialog: true,
   canvasReady: false,
   isCropping: false,
+  adjustments: { ...DEFAULT_ADJUSTMENTS },
+  adjustmentTarget: 'selected' as AdjustmentTarget,
 
   // ── Actions ─────────────────────────────────────────────
   setActiveTool: (tool: ToolType) =>
@@ -110,4 +128,19 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   setShowNewCanvasDialog: (val: boolean) => set({ showNewCanvasDialog: val }),
   setCanvasReady: (val: boolean) => set({ canvasReady: val }),
   setIsCropping: (val: boolean) => set({ isCropping: val }),
+
+  setAdjustment: (key: AdjustmentKey, value: number) =>
+    set((s) => ({ adjustments: { ...s.adjustments, [key]: value } })),
+
+  resetAdjustments: () => set({ adjustments: { ...DEFAULT_ADJUSTMENTS } }),
+
+  resetAdjustmentSection: (section: AdjustmentSection) =>
+    set((s) => {
+      const keys = SECTION_KEYS[section];
+      const patch: Partial<AdjustmentsState> = {};
+      for (const k of keys) patch[k] = DEFAULT_ADJUSTMENTS[k];
+      return { adjustments: { ...s.adjustments, ...patch } };
+    }),
+
+  setAdjustmentTarget: (target: AdjustmentTarget) => set({ adjustmentTarget: target }),
 }));
