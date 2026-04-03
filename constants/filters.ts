@@ -34,6 +34,7 @@ export interface FilterPreset {
   blur?: number;
   noise?: number;
   matrix?: number[];
+  thumbnail?: string;
 }
 
 export const FILTER_PRESETS: FilterPreset[] = [
