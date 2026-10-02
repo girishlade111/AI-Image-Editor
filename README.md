@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LadeStack AI Image Editor
 
-## Getting Started
+A free, browser-based AI-powered image editor built with Next.js: canvas editing with layers, filters and brushes (fabric.js), plus one-click AI tools — background removal, object cleanup and upscaling.
 
-First, run the development server:
+## Features
+
+- **Canvas editor** (`/editor`) powered by fabric.js: layers, shapes, text, brushes, image filters
+- **AI background removal** — via remove.bg API (`app/api/remove-bg`)
+- **AI cleanup** — remove objects/distractions via ClipDrop cleanup API (`app/api/cleanup`)
+- **AI upscale** — image upscaling via ClipDrop (`app/api/upscale`)
+- State management with zustand; Radix UI + Tailwind CSS components; framer-motion transitions
+- TypeScript, Next.js 14 App Router
+
+## Tech stack
+
+- Next.js 14.2, React 18, TypeScript 5
+- fabric.js 5 (canvas engine), zustand (state), Radix UI, Tailwind CSS 3
+- Server API routes proxying remove.bg and ClipDrop
+
+## Quick start
 
 ```bash
+npm install
+cp .env.example .env.local   # then fill in the keys below
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 (home) or http://localhost:3000/editor (the editor).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Purpose |
+| --- | --- |
+| `REMOVE_BG_API_KEY` | API key for remove.bg (background removal) |
+| `CLIPDROP_API_KEY` | API key for ClipDrop (cleanup + upscale) |
 
-## Learn More
+The canvas editor works fully client-side without keys; the three AI tools return 4xx/5xx until these keys are configured.
 
-To learn more about Next.js, take a look at the following resources:
+## Project structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+├── page.tsx            # landing page
+├── editor/page.tsx     # editor shell
+└── api/
+    ├── remove-bg/route.ts
+    ├── cleanup/route.ts
+    └── upscale/route.ts
+components/editor/      # editor UI (toolbar, layers panel, canvas)
+lib/                    # fabric helpers, utilities
+store/                  # zustand stores
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy notes
 
-## Deploy on Vercel
+Needs a Node-capable host (Netlify / Vercel / VPS) because of the server API routes, and the two API keys above. Static export is not possible (route handlers).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built by [Girish Lade](https://ladestack.in)
